@@ -1,0 +1,24 @@
+<resources xmlns:gio="http://schemas.android.com/apk/res-auto">
+    <string name="app_name">Popular Movies 1</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="api_key">5fb6d918f1926240b59fc040268a3a3b</string>
+    <string name="phone_tag">phone_tag</string>
+    <string name="tablet_tag">tablet_tag</string>
+    <string name="popularity_text">Popularity: <gio:g id="popularity">%1$1.0f</gio:g></string>
+    <string name="rating_text">Rating: <gio:g id="rating">%1$1.0f</gio:g></string>
+    <!-- This options are for Settings activity -->
+    <string name="sort_list_key">SortBy</string>
+    <string name="sort_list_title">Sort Movies By</string>
+    <string name="sort_list_description">The way that movies will be sorted and displayed in the screen</string>
+    <string-array name="sort_options">
+        <item>Most Popular</item>
+        <item>Highest Rated</item>
+    </string-array>
+    <string-array name="sort_options_values">
+        <item>most_popular</item>
+        <item>higuest_rated</item>
+    </string-array>
+    <!-- Algun otro comentario -->
+</resources>
