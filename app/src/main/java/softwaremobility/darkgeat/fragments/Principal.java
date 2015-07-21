@@ -25,9 +25,15 @@ public class Principal extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_principal,null,false);
 
-        NetworkConnection nc = new NetworkConnection(getActivity());
-        nc.execute();
-
         return view;
+    }
+
+    public void makeAnUpdate(String sortMoviesBy){
+        updateData(sortMoviesBy);
+    }
+
+    private void updateData(String sortBy) {
+        NetworkConnection nc = new NetworkConnection(getActivity());
+        nc.execute(sortBy);
     }
 }

@@ -33,8 +33,8 @@ public class DataBase {
                                             Key_Description + " TEXT NOT NULL, " +
                                             Key_Popularity + " FLOAT, " +
                                             Key_Rating + " FLOAT, " +
-                                            Key_Poster + " TEXT, " +
-                                            Key_Preview + " TEXT);";
+                                            Key_Poster + " BLOB, " +
+                                            Key_Preview + " BLOB);";
     /** ---------------------------------- SQLite Helper ------------------------------------**/
     private MyHelper myDB;
     private SQLiteDatabase myDataBase;

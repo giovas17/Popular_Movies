@@ -12,13 +12,14 @@
     <string name="sort_list_key">SortBy</string>
     <string name="sort_list_title">Sort Movies By</string>
     <string name="sort_list_description">The way that movies will be sorted and displayed in the screen</string>
+    <string name="sort_list_default_value">popularity.desc</string>
     <string-array name="sort_options">
         <item>Most Popular</item>
         <item>Highest Rated</item>
     </string-array>
     <string-array name="sort_options_values">
-        <item>most_popular</item>
-        <item>higuest_rated</item>
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
     </string-array>
     <!-- Algun otro comentario -->
 </resources>

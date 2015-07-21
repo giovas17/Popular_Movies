@@ -2,6 +2,8 @@ package softwaremobility.darkgeat.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import softwaremobility.darkgeat.fragments.Detail;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
@@ -47,6 +50,13 @@ public class ImageAdapter extends ArrayAdapter {
             viewHolder = (ViewHolder)convertView.getTag();
             Picasso.with(mContext).load(images[position]).into(viewHolder.posterMovie);
         }
+        viewHolder.posterMovie.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ActionBarActivity)mContext).getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.principal_container,new Detail()).commit();
+            }
+        });
 
 
         return convertView;

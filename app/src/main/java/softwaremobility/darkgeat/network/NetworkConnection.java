@@ -2,6 +2,7 @@ package softwaremobility.darkgeat.network;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,7 +26,7 @@ import softwaremobility.darkgeat.popularmovies1.R;
 /**
  * Created by darkgeat on 14/07/15.
  */
-public class NetworkConnection extends AsyncTask<Void,String,Void> {
+public class NetworkConnection extends AsyncTask<String,String,Void> {
 
     private final String NETWORK_TAG = NetworkConnection.class.getSimpleName();
     private final Context mContext;
@@ -35,7 +36,7 @@ public class NetworkConnection extends AsyncTask<Void,String,Void> {
     public NetworkConnection(Context c){ mContext = c; }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Void doInBackground(String... params) {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -48,9 +49,11 @@ public class NetworkConnection extends AsyncTask<Void,String,Void> {
             final String SORT_PARAM = "sort_by";
             final String APIKEY_PARAM = "api_key";
 
+            String sortBy = (params[0]==null) ? mContext.getString(R.string.sort_list_default_value) : params[0];
+
             //Construction of the request URL
             Uri buildURI = Uri.parse(BASE_URL_MOVIES).buildUpon()
-                    .appendQueryParameter(SORT_PARAM,"popularity.desc")
+                    .appendQueryParameter(SORT_PARAM,sortBy)
                     .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
                     .build();
 
@@ -80,7 +83,7 @@ public class NetworkConnection extends AsyncTask<Void,String,Void> {
             }
 
             responseJsonStr = buffer.toString();
-            getPostersOfMovies(responseJsonStr);
+            getMoviesData(responseJsonStr);
         }catch (IOException e){
             Log.e(NETWORK_TAG,e.toString());
         }
@@ -93,17 +96,21 @@ public class NetworkConnection extends AsyncTask<Void,String,Void> {
         super.onProgressUpdate(values);
 
         GridView grid = (GridView) ((Activity)mContext).findViewById(R.id.gridView);
-        //set 3 columns in the grid if the device has more than 1000px width and more than 2000px like nexus 6 (portrait)
-        int numColumns = (width > 1000 && height  > 2000) ? 3 : 2;
+        int numColumns;
         if(grid.getTag().toString().equalsIgnoreCase(mContext.getString(R.string.phone_tag))) {
-            numColumns = (width > 2000 && height  > 1000) ? 5 : 3; //landscape mode for nexus 6
+            if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                numColumns = (width > 2000 && height > 1000) ? 5 : 3; //landscape mode for nexus 6
+            }else{
+                //set 3 columns in the grid if the device has more than 1000px width and more than 2000px like nexus 6 (portrait)
+                numColumns = (width > 1000 && height  > 2000) ? 3 : 2;
+            }
             grid.setNumColumns(numColumns);
         }
         ImageAdapter adapter = new ImageAdapter(mContext,values);
         grid.setAdapter(adapter);
     }
 
-    public void getPostersOfMovies(String JSONStr){
+    public void getMoviesData(String JSONStr){
 
         final String BASE_PATH_PICTURE = "http://image.tmdb.org/t/p/";
         final String IMAGE_SIZE_PX;
@@ -113,6 +120,8 @@ public class NetworkConnection extends AsyncTask<Void,String,Void> {
         final String ID = "id";
         final String RATING = "vote_average";
         final String POPULARITY = "popularity";
+        final String TOTAL_VOTES = "vote_count";
+        final String PREVIEW = "backdrop_path";
 
         Point size = new Point();
         Display display = ((Activity)mContext).getWindowManager().getDefaultDisplay();
