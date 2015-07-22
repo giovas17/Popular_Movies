@@ -1,27 +1,15 @@
 package softwaremobility.darkgeat.popularmovies1;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-
 import softwaremobility.darkgeat.fragments.Principal;
 import softwaremobility.darkgeat.objects.Utils;
 
-import static android.R.color.black;
-
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_PRINCIPAL_TAG = Principal.class.getSimpleName();
     private Toolbar toolbar;

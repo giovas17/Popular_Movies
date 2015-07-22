@@ -19,19 +19,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import softwaremobility.darkgeat.adapters.ImageAdapter;
+import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
  * Created by darkgeat on 14/07/15.
  */
-public class NetworkConnection extends AsyncTask<String,String,Void> {
+public class NetworkConnection extends AsyncTask<String,Void,Void> {
 
     private final String NETWORK_TAG = NetworkConnection.class.getSimpleName();
     private final Context mContext;
     private int width;
     private int height;
+    private List<Movie> movies;
 
     public NetworkConnection(Context c){ mContext = c; }
 
@@ -92,7 +96,7 @@ public class NetworkConnection extends AsyncTask<String,String,Void> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
+    protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
 
         GridView grid = (GridView) ((Activity)mContext).findViewById(R.id.gridView);
@@ -106,7 +110,7 @@ public class NetworkConnection extends AsyncTask<String,String,Void> {
             }
             grid.setNumColumns(numColumns);
         }
-        ImageAdapter adapter = new ImageAdapter(mContext,values);
+        ImageAdapter adapter = new ImageAdapter(mContext,movies);
         grid.setAdapter(adapter);
     }
 
@@ -118,6 +122,7 @@ public class NetworkConnection extends AsyncTask<String,String,Void> {
         final String POSTER = "poster_path";
         final String TITLE = "original_title";
         final String ID = "id";
+        final String DESCRIPTION = "overview";
         final String RATING = "vote_average";
         final String POPULARITY = "popularity";
         final String TOTAL_VOTES = "vote_count";
@@ -132,19 +137,30 @@ public class NetworkConnection extends AsyncTask<String,String,Void> {
         //if the width of the screen is bigger than 1000px will set w500
         IMAGE_SIZE_PX = width > 1000 ? "w500//" : "w342//";
 
-        String[] urls;
+        movies = new ArrayList<>();
 
         try {
             JSONObject object = new JSONObject(JSONStr);
             JSONArray moviesArray = object.getJSONArray(RESULT_ARRAY);
-            urls = new String[moviesArray.length()];
 
             for (int i = 0 ; i < moviesArray.length() ; i++){
+                Movie movie = new Movie();
                 JSONObject obj = moviesArray.getJSONObject(i);
                 String poster_path = obj.getString(POSTER);
-                urls[i] = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
+                poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
+                String preview_path = obj.getString(PREVIEW);
+                preview_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + preview_path;
+                movie.setPoster_image_path(poster_path);
+                movie.setPreview_image_path(preview_path);
+                movie.setId(obj.getLong(ID));
+                movie.setTitle(obj.getString(TITLE));
+                movie.setRating(obj.getDouble(RATING));
+                movie.setDescription(obj.getString(DESCRIPTION));
+                movie.setPopularity(obj.getDouble(POPULARITY));
+                movie.setVote_count(obj.getInt(TOTAL_VOTES));
+                movies.add(movie);
             }
-            publishProgress(urls);
+            publishProgress();
         } catch (JSONException e) {
             e.printStackTrace();
         }
