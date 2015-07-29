@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import softwaremobility.darkgeat.adapters.ImageAdapter;
 import softwaremobility.darkgeat.objects.Movie;
+import softwaremobility.darkgeat.objects.Utils;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
@@ -129,6 +130,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
         final String TOTAL_VOTES = "vote_count";
         final String PREVIEW = "backdrop_path";
         final String RELEASE_DATE = "release_date";
+        final String GENRES = "genre_ids";
         final String BIGGEST_IMAGE_SIZE = "w500//";
         final String SMALLER_IMAGE_SIZE;
 
@@ -165,6 +167,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
                 movie.setPopularity(obj.getDouble(POPULARITY));
                 movie.setVote_count(obj.getInt(TOTAL_VOTES));
                 movie.setRelease_date(obj.getString(RELEASE_DATE));
+                movie.setGenres(Utils.getGenresMovie(mContext,obj.getJSONArray(GENRES)));
                 movies.add(movie);
             }
             publishProgress();

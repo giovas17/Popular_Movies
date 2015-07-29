@@ -11,6 +11,7 @@ public class Movie implements Parcelable{
     private long id;
     private String description;
     private String release_date;
+    private String genres;
     private double popularity;
     private double rating;
     private int vote_count;
@@ -23,6 +24,7 @@ public class Movie implements Parcelable{
         id = 0;
         description = "";
         release_date = "";
+        genres = "";
         popularity = 0f;
         rating = 0f;
         vote_count = 0;
@@ -91,6 +93,14 @@ public class Movie implements Parcelable{
         return poster_image_path;
     }
 
+    public String getGenres() {
+        return genres;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
+    }
+
     public void setPoster_image_path(String poster_image_path) {
         this.poster_image_path = poster_image_path;
     }
@@ -123,6 +133,7 @@ public class Movie implements Parcelable{
             aux.setId(source.readLong());
             aux.setTitle(source.readString());
             aux.setDescription(source.readString());
+            aux.setGenres(source.readString());
             aux.setRelease_date(source.readString());
             aux.setPopularity(source.readDouble());
             aux.setRating(source.readDouble());
@@ -144,6 +155,7 @@ public class Movie implements Parcelable{
         dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(description);
+        dest.writeString(genres);
         dest.writeString(release_date);
         dest.writeDouble(popularity);
         dest.writeDouble(rating);

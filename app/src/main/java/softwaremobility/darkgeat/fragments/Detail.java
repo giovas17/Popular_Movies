@@ -27,6 +27,7 @@ public class Detail extends Fragment {
     public TextView ratingMovie;
     public TextView descriptionMovie;
     public TextView dateMovie;
+    public TextView genresMovies;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class Detail extends Fragment {
         ratingMovie = (TextView)view.findViewById(R.id.rating_movie_detail);
         descriptionMovie = (TextView)view.findViewById(R.id.description_movie_detail);
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
+        genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
 
         Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
         titleMovie.setText(movie.getTitle());
@@ -55,6 +57,7 @@ public class Detail extends Fragment {
         descriptionMovie.setText(movie.getDescription());
         dateMovie.setText(movie.getRelease_date());
         ratingMovie.setText(getActivity().getString(R.string.rating_value,movie.getRating(),movie.getVote_count()));
+        genresMovies.setText(movie.getGenres());
 
         return view;
     }
