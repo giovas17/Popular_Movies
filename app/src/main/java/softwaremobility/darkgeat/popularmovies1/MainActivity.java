@@ -6,13 +6,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import org.json.JSONObject;
+
 import softwaremobility.darkgeat.fragments.Principal;
+import softwaremobility.darkgeat.listeners.onNetworkDataListener;
+import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Utils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements onNetworkDataListener {
 
     public static final String FRAGMENT_PRINCIPAL_TAG = Principal.class.getSimpleName();
     private Toolbar toolbar;
+    private JSONObject data;
     private String mSortBy;
 
     @Override
@@ -20,12 +26,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if(savedInstanceState == null) {
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.principal_container,
-                new Principal(), FRAGMENT_PRINCIPAL_TAG).commit();
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
+            mSortBy = Utils.getSortedBy(this);
+            refreshData();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.principal_container,
+                    new Principal(), FRAGMENT_PRINCIPAL_TAG).commit();
+        }
+    }
+
+    private void refreshData() {
+        NetworkConnection networkConnection = new NetworkConnection(this);
+        networkConnection.execute(mSortBy);
     }
 
     @Override
@@ -62,5 +78,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onReceivedData(JSONObject object) {
+        data = object;
     }
 }

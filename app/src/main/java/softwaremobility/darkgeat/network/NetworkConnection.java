@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import softwaremobility.darkgeat.adapters.ImageAdapter;
+import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.objects.Utils;
 import softwaremobility.darkgeat.popularmovies1.R;
@@ -29,24 +30,27 @@ import softwaremobility.darkgeat.popularmovies1.R;
 /**
  * Created by darkgeat on 14/07/15.
  */
-public class NetworkConnection extends AsyncTask<String,Void,Void> {
+public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
 
     private final String NETWORK_TAG = NetworkConnection.class.getSimpleName();
     private final Context mContext;
+    private onNetworkDataListener listener;
+    private JSONObject data;
+    private String responseJsonStr = null;
     private int width;
     private int height;
     private List<Movie> movies;
 
-    public NetworkConnection(Context c){ mContext = c; }
+    public NetworkConnection(Context c){
+        mContext = c;
+        listener = (onNetworkDataListener) mContext;
+    }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Boolean doInBackground(String... params) {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-
-        //Will contain the JSON response as a string
-        String responseJsonStr = null;
 
         try{
             final String BASE_URL_MOVIES = "http://api.themoviedb.org/3/discover/movie?";
@@ -73,7 +77,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null){
-                return null; //Nothing to do.
+                return false; //Nothing to do.
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -83,16 +87,27 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
             }
 
             if (buffer.length() == 0){
-                return null; //Has no lines. String empty.
+                return false; //Has no lines. String empty.
             }
 
             responseJsonStr = buffer.toString();
-            getMoviesData(responseJsonStr);
+            return true;
         }catch (IOException e){
             Log.e(NETWORK_TAG,e.toString());
+            return false;
         }
+    }
 
-        return null;
+    @Override
+    protected void onPostExecute(Boolean result) {
+        if(result){
+            try {
+                data = new JSONObject(responseJsonStr);
+                listener.onReceivedData(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
