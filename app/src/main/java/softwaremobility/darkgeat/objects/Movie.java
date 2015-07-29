@@ -16,6 +16,7 @@ public class Movie implements Parcelable{
     private int vote_count;
     private String poster_image_path;
     private String preview_image_path;
+    private String poster_thumbnail;
 
     public Movie() {
         title = "";
@@ -27,6 +28,7 @@ public class Movie implements Parcelable{
         vote_count = 0;
         poster_image_path = "";
         preview_image_path = "";
+        poster_thumbnail = "";
     }
 
     public String getTitle() {
@@ -101,6 +103,14 @@ public class Movie implements Parcelable{
         this.preview_image_path = preview_image_path;
     }
 
+    public String getPoster_thumbnail() {
+        return poster_thumbnail;
+    }
+
+    public void setPoster_thumbnail(String poster_thumbnail) {
+        this.poster_thumbnail = poster_thumbnail;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -119,6 +129,7 @@ public class Movie implements Parcelable{
             aux.setVote_count(source.readInt());
             aux.setPoster_image_path(source.readString());
             aux.setPreview_image_path(source.readString());
+            aux.setPoster_thumbnail(source.readString());
             return aux;
         }
 
@@ -139,5 +150,6 @@ public class Movie implements Parcelable{
         dest.writeInt(vote_count);
         dest.writeString(poster_image_path);
         dest.writeString(preview_image_path);
+        dest.writeString(poster_thumbnail);
     }
 }

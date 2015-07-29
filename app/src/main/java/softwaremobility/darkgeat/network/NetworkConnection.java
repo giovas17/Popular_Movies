@@ -6,13 +6,13 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
-import android.widget.GridView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import softwaremobility.darkgeat.adapters.ImageAdapter;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.R;
@@ -99,8 +98,8 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
 
-        GridView grid = (GridView) ((Activity)mContext).findViewById(R.id.gridView);
-        int numColumns;
+        RecyclerView grid = (RecyclerView) ((Activity)mContext).findViewById(R.id.gridView);
+        int numColumns = 3;
         if(grid.getTag().toString().equalsIgnoreCase(mContext.getString(R.string.phone_tag))) {
             if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 numColumns = (width > 2000 && height > 1000) ? 5 : 3; //landscape mode for nexus 6
@@ -108,8 +107,10 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
                 //set 3 columns in the grid if the device has more than 1000px width and more than 2000px like nexus 6 (portrait)
                 numColumns = (width > 1000 && height  > 2000) ? 3 : 2;
             }
-            grid.setNumColumns(numColumns);
         }
+        GridLayoutManager glm = new GridLayoutManager(mContext,numColumns);
+        grid.setHasFixedSize(true);
+        grid.setLayoutManager(glm);
         ImageAdapter adapter = new ImageAdapter(mContext,movies);
         grid.setAdapter(adapter);
     }
@@ -127,6 +128,9 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
         final String POPULARITY = "popularity";
         final String TOTAL_VOTES = "vote_count";
         final String PREVIEW = "backdrop_path";
+        final String RELEASE_DATE = "release_date";
+        final String BIGGEST_IMAGE_SIZE = "w500//";
+        final String SMALLER_IMAGE_SIZE;
 
         Point size = new Point();
         Display display = ((Activity)mContext).getWindowManager().getDefaultDisplay();
@@ -136,6 +140,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
 
         //if the width of the screen is bigger than 1000px will set w500
         IMAGE_SIZE_PX = width > 1000 ? "w500//" : "w342//";
+        SMALLER_IMAGE_SIZE = (IMAGE_SIZE_PX.contains("342")) ? "w185//" : "w342//";
 
         movies = new ArrayList<>();
 
@@ -147,9 +152,10 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
                 Movie movie = new Movie();
                 JSONObject obj = moviesArray.getJSONObject(i);
                 String poster_path = obj.getString(POSTER);
+                movie.setPoster_thumbnail(BASE_PATH_PICTURE + SMALLER_IMAGE_SIZE + poster_path);
                 poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
                 String preview_path = obj.getString(PREVIEW);
-                preview_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + preview_path;
+                preview_path = BASE_PATH_PICTURE + BIGGEST_IMAGE_SIZE + preview_path;
                 movie.setPoster_image_path(poster_path);
                 movie.setPreview_image_path(preview_path);
                 movie.setId(obj.getLong(ID));
@@ -158,6 +164,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Void> {
                 movie.setDescription(obj.getString(DESCRIPTION));
                 movie.setPopularity(obj.getDouble(POPULARITY));
                 movie.setVote_count(obj.getInt(TOTAL_VOTES));
+                movie.setRelease_date(obj.getString(RELEASE_DATE));
                 movies.add(movie);
             }
             publishProgress();

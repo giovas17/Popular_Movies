@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             if(postersFragment != null){
                 postersFragment.makeAnUpdate(sortBy);
             }
+            mSortBy = sortBy;
         }
     }
 
