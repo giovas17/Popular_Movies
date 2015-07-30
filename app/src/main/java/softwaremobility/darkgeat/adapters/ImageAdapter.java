@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import softwaremobility.darkgeat.fragments.Detail;
@@ -30,9 +31,9 @@ import softwaremobility.darkgeat.popularmovies1.R;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private Context mContext;
-    private List<Movie> movies;
+    private ArrayList<Movie> movies;
 
-    public ImageAdapter(Context context, List<Movie> all_movies) {
+    public ImageAdapter(Context context, ArrayList<Movie> all_movies) {
         mContext = context;
         movies = all_movies;
     }
