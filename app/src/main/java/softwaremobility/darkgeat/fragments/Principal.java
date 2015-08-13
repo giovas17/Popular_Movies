@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import softwaremobility.darkgeat.adapters.ImageAdapter;
+import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
@@ -61,7 +62,12 @@ public class Principal extends Fragment {
         GridLayoutManager glm = new GridLayoutManager(getActivity(),numColumns);
         grid.setHasFixedSize(true);
         grid.setLayoutManager(glm);
-        ImageAdapter adapter = new ImageAdapter(getActivity(),movies);
+        ImageAdapter adapter;
+        if(MainActivity.two_views){
+            adapter = new ImageAdapter(getActivity(),movies, (onMovieSelectedListener) getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_DETAIL_TAG));
+        }else {
+            adapter = new ImageAdapter(getActivity(),movies);
+        }
         grid.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

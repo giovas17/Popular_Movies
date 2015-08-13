@@ -28,6 +28,7 @@ import softwaremobility.darkgeat.objects.Utils;
 public class MainActivity extends AppCompatActivity implements onNetworkDataListener {
 
     public static final String FRAGMENT_PRINCIPAL_TAG = Principal.class.getSimpleName();
+    public static final String FRAGMENT_DETAIL_TAG = Detail.class.getSimpleName();
     private Toolbar toolbar;
     private JSONObject data;
     private String mSortBy;
@@ -51,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("movieSelected",new Movie());
                 detail.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,detail).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,
+                        detail,FRAGMENT_DETAIL_TAG).commit();
             }
             mSortBy = Utils.getSortedBy(this);
             refreshData();

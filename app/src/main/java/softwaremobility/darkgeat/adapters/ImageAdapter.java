@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import softwaremobility.darkgeat.fragments.Detail;
+import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.DetailActivity;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
@@ -32,10 +33,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     private Context mContext;
     private ArrayList<Movie> movies;
+    private onMovieSelectedListener listener;
 
     public ImageAdapter(Context context, ArrayList<Movie> all_movies) {
         mContext = context;
         movies = all_movies;
+    }
+    public ImageAdapter(Context context, ArrayList<Movie> all_movies, onMovieSelectedListener listener) {
+        mContext = context;
+        movies = all_movies;
+        this.listener = listener;
     }
 
     @Override
@@ -55,11 +62,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         viewHolder.posterMovie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putParcelable("movieSelected", movies.get(pos));
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtras(args);
-                mContext.startActivity(intent);
+                if(MainActivity.two_views) {
+                    listener.onMovieSelected(movies.get(pos));
+                }else {
+                    Bundle args = new Bundle();
+                    args.putParcelable("movieSelected", movies.get(pos));
+                    Intent intent = new Intent(mContext, DetailActivity.class);
+                    intent.putExtras(args);
+                    mContext.startActivity(intent);
+                }
             }
         });
         viewHolder.titleMovie.setText(movies.get(position).getTitle());
