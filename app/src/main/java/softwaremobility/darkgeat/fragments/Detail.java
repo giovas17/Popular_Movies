@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 
 import softwaremobility.darkgeat.objects.Movie;
+import softwaremobility.darkgeat.popularmovies1.MainActivity;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
@@ -51,7 +52,11 @@ public class Detail extends Fragment {
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
         genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
 
-        Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
+        if(MainActivity.two_views){
+
+        }else {
+            Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
+        }
         titleMovie.setText(movie.getTitle());
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());

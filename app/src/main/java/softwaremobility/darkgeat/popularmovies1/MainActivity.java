@@ -1,6 +1,7 @@
 package softwaremobility.darkgeat.popularmovies1;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import softwaremobility.darkgeat.fragments.Detail;
 import softwaremobility.darkgeat.fragments.Principal;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     private JSONObject data;
     private String mSortBy;
     private ArrayList<Movie> mMovies;
+    public static boolean two_views = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +41,18 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setElevation(5f);
+
+        two_views = findViewById(R.id.detail_container) != null ? true : false;
 
         if(savedInstanceState == null) {
-
+            if(two_views){
+                Detail detail = new Detail();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("movieSelected",new Movie());
+                detail.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,detail).commit();
+            }
             mSortBy = Utils.getSortedBy(this);
             refreshData();
         }else{

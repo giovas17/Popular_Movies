@@ -5,4 +5,5 @@
     <color name="primary_light_color">#ffccbc</color>
     <color name="window_background">#bdbdbd</color>
     <color name="accent_color">#00b0ff</color>
+    <color name="card_background">#cfffffff</color>
 </resources>
