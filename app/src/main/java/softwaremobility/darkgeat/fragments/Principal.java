@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import softwaremobility.darkgeat.adapters.ImageAdapter;
+import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
@@ -50,15 +51,23 @@ public class Principal extends Fragment {
         if(grid.getTag().toString().equalsIgnoreCase(getActivity().getString(R.string.phone_tag))) {
             if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 numColumns = (width > 2000 && height > 1000) ? 5 : 3; //landscape mode for nexus 6
-            }else{
+            }else {
                 //set 3 columns in the grid if the device has more than 1000px width and more than 2000px like nexus 6 (portrait)
-                numColumns = (width > 1000 && height  > 2000) ? 3 : 2;
+                numColumns = (width > 1000 && height > 2000) ? 3 : 2;
             }
+        }
+        if(grid.getTag().toString().equalsIgnoreCase(getActivity().getString(R.string.tablet_tag))) {
+            numColumns = (width > 1000 && height > 2000) ? 2 : 3;
         }
         GridLayoutManager glm = new GridLayoutManager(getActivity(),numColumns);
         grid.setHasFixedSize(true);
         grid.setLayoutManager(glm);
-        ImageAdapter adapter = new ImageAdapter(getActivity(),movies);
+        ImageAdapter adapter;
+        if(MainActivity.two_views){
+            adapter = new ImageAdapter(getActivity(),movies, (onMovieSelectedListener) getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_DETAIL_TAG));
+        }else {
+            adapter = new ImageAdapter(getActivity(),movies);
+        }
         grid.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

@@ -30,6 +30,7 @@ public class DetailActivity extends AppCompatActivity {
         toolbar = (Toolbar)findViewById(R.id.anim_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(5f);
 
         collapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(movie.getTitle());

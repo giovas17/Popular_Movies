@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/card1"
-        app:cardBackgroundColor="#5effffff"
+        app:cardBackgroundColor="@color/card_background"
         app:cardElevation="@dimen/elevation">
 
         <LinearLayout
@@ -23,8 +23,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/title_movie_detail"
                 android:text="@string/title"
-                android:textColor="@android:color/white"
+                android:textColor="@color/primary_color"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_color"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -50,7 +54,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/rating"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/accent_color"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
                     <TextView
@@ -58,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/rating_movie_detail"
                         android:text="5.2 / 10 - 2554 votes"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
                     <TextView
@@ -66,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/normal_padding"
                         android:text="@string/date"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/accent_color"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
                     <TextView
@@ -74,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/date_release_movie_detail"
                         android:text="20/12/2015"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
@@ -82,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/normal_padding"
                         android:text="@string/popularity"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/accent_color"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
                     <TextView
@@ -90,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/popularity_movie_detail"
                         android:text="8.5"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 </LinearLayout>
@@ -103,7 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/normal_padding"
         android:id="@+id/card2"
-        app:cardBackgroundColor="#5effffff"
+        app:cardBackgroundColor="@color/card_background"
         android:layout_below="@+id/card1"
         app:cardElevation="@dimen/elevation">
 
@@ -118,7 +122,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/genre"
                 android:textColor="@color/primary_color"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_color"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -126,7 +135,7 @@
                 android:layout_marginTop="@dimen/small_padding"
                 android:padding="@dimen/small_padding"
                 android:id="@+id/genres_movie_detail"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
         </LinearLayout>
@@ -138,7 +147,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/normal_padding"
         android:id="@+id/card3"
-        app:cardBackgroundColor="#5effffff"
+        app:cardBackgroundColor="@color/card_background"
         android:layout_below="@+id/card2"
         app:cardElevation="@dimen/elevation">
 
@@ -153,7 +162,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sinopsis"
                 android:textColor="@color/primary_color"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_color"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -161,7 +175,7 @@
                 android:layout_marginTop="@dimen/small_padding"
                 android:padding="@dimen/small_padding"
                 android:id="@+id/description_movie_detail"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
         </LinearLayout>
