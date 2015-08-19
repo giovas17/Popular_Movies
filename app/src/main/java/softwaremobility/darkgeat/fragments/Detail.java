@@ -10,9 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 
 import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
+import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
@@ -32,6 +35,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     public TextView descriptionMovie;
     public TextView dateMovie;
     public TextView genresMovies;
+    private onNetworkDataListener listener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,8 +68,15 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
         dateMovie.setText(movie.getRelease_date());
-        ratingMovie.setText(getActivity().getString(R.string.rating_value,movie.getRating(),movie.getVote_count()));
+        ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
+
+        listener = new onNetworkDataListener() {
+            @Override
+            public void onReceivedData(JSONObject object) {
+
+            }
+        };
 
         return view;
     }
@@ -82,7 +93,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         dateMovie.setText(movie.getRelease_date());
         ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
-        NetworkConnection connection = new NetworkConnection(getActivity(), NetworkConnection.Request.videoRequest);
+        NetworkConnection connection = new NetworkConnection(getActivity(), NetworkConnection.Request.videoRequest,listener);
         connection.execute(new String[]{String.valueOf(movie.getId())});
     }
 }

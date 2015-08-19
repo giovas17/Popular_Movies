@@ -37,7 +37,6 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     private onNetworkDataListener listener;
     private JSONObject data;
     private String responseJsonStr = null;
-    private List<Movie> movies;
     private Request typeRequest;
 
     public NetworkConnection(Context c){
@@ -46,9 +45,9 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
         typeRequest = Request.dataRequest;
     }
 
-    public NetworkConnection(Context c, Request type){
+    public NetworkConnection(Context c, Request type, onNetworkDataListener networkDataListener){
         mContext = c;
-        listener = (onNetworkDataListener) mContext;
+        listener = networkDataListener;
         typeRequest = type;
     }
 
@@ -85,6 +84,19 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
                         .appendPath(MOVIE_PATH)
                         .appendPath(idMovie)
                         .appendPath(VIDEOS_PATH)
+                        .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
+                        .build();
+                break;
+            }
+            case reviewsRequest:{
+                final String REVIEWS_PATH = "reviews";
+                idMovie = params[0];
+
+                //Construction of the request URL
+                requestURL = Uri.parse(BASE_URL).buildUpon()
+                        .appendPath(MOVIE_PATH)
+                        .appendPath(idMovie)
+                        .appendPath(REVIEWS_PATH)
                         .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
                         .build();
                 break;
