@@ -34,15 +34,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private Context mContext;
     private ArrayList<Movie> movies;
     private onMovieSelectedListener listener;
+    private boolean isFirstTime;
 
     public ImageAdapter(Context context, ArrayList<Movie> all_movies) {
         mContext = context;
         movies = all_movies;
+        isFirstTime = true;
     }
     public ImageAdapter(Context context, ArrayList<Movie> all_movies, onMovieSelectedListener listener) {
         mContext = context;
         movies = all_movies;
         this.listener = listener;
+        isFirstTime = true;
     }
 
     @Override
@@ -62,9 +65,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         viewHolder.posterMovie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(MainActivity.two_views) {
+                if (MainActivity.two_views) {
                     listener.onMovieSelected(movies.get(pos));
-                }else {
+                } else {
                     Bundle args = new Bundle();
                     args.putParcelable("movieSelected", movies.get(pos));
                     Intent intent = new Intent(mContext, DetailActivity.class);
@@ -76,6 +79,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         viewHolder.titleMovie.setText(movies.get(position).getTitle());
         viewHolder.popularityMovie.setText(mContext.getString(R.string.popularity_text, movies.get(position).getPopularity()));
         viewHolder.ratingMovie.setText(mContext.getString(R.string.rating_text,movies.get(position).getRating()));
+        if(MainActivity.two_views && position == 0 && isFirstTime){
+            listener.onMovieSelected(movies.get(position));
+            isFirstTime = false;
+        }
     }
 
     @Override

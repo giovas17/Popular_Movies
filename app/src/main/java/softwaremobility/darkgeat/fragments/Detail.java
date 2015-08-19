@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 
 import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
+import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
 import softwaremobility.darkgeat.popularmovies1.R;
@@ -79,8 +80,9 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
         dateMovie.setText(movie.getRelease_date());
-        ratingMovie.setText(getActivity().getString(R.string.rating_value,movie.getRating(),movie.getVote_count()));
+        ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
-
+        NetworkConnection connection = new NetworkConnection(getActivity(), NetworkConnection.Request.videoRequest);
+        connection.execute(new String[]{String.valueOf(movie.getId())});
     }
 }

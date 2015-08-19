@@ -38,33 +38,70 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     private JSONObject data;
     private String responseJsonStr = null;
     private List<Movie> movies;
+    private Request typeRequest;
 
     public NetworkConnection(Context c){
         mContext = c;
         listener = (onNetworkDataListener) mContext;
+        typeRequest = Request.dataRequest;
+    }
+
+    public NetworkConnection(Context c, Request type){
+        mContext = c;
+        listener = (onNetworkDataListener) mContext;
+        typeRequest = type;
     }
 
     @Override
     protected Boolean doInBackground(String... params) {
+        Uri requestURL = null;
+        final String BASE_URL = "http://api.themoviedb.org/3";
+        final String MOVIE_PATH = "movie";
+        final String APIKEY_PARAM = "api_key";
+        String idMovie, searchField;
+        switch (typeRequest){
+            case dataRequest:{
+                final String BASE_URL_MOVIES = "discover";
+                final String SORT_PARAM = "sort_by";
+                searchField = params[0];
 
+                String sortBy = (searchField == null) ? mContext.getString(R.string.sort_list_default_value) : searchField;
+
+                //Construction of the request URL
+                requestURL = Uri.parse(BASE_URL).buildUpon()
+                        .appendPath(BASE_URL_MOVIES)
+                        .appendPath(MOVIE_PATH)
+                        .appendQueryParameter(SORT_PARAM,sortBy)
+                        .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
+                        .build();
+                break;
+            }
+            case videoRequest:{
+                final String VIDEOS_PATH = "videos";
+                idMovie = params[0];
+
+                //Construction of the request URL
+                requestURL = Uri.parse(BASE_URL).buildUpon()
+                        .appendPath(MOVIE_PATH)
+                        .appendPath(idMovie)
+                        .appendPath(VIDEOS_PATH)
+                        .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
+                        .build();
+                break;
+            }
+        }
+        Log.w(NETWORK_TAG,requestURL.toString());
+        return retrieveData(requestURL);
+    }
+
+    private boolean retrieveData(Uri requestedURL){
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         try{
-            final String BASE_URL_MOVIES = "http://api.themoviedb.org/3/discover/movie?";
-            final String SORT_PARAM = "sort_by";
-            final String APIKEY_PARAM = "api_key";
-
-            String sortBy = (params[0]==null) ? mContext.getString(R.string.sort_list_default_value) : params[0];
-
-            //Construction of the request URL
-            Uri buildURI = Uri.parse(BASE_URL_MOVIES).buildUpon()
-                    .appendQueryParameter(SORT_PARAM,sortBy)
-                    .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
-                    .build();
 
             //Final URL for request
-            URL url = new URL(buildURI.toString());
+            URL url = new URL(requestedURL.toString());
 
             //Creation for the request of movies data
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -89,6 +126,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
             }
 
             responseJsonStr = buffer.toString();
+            Log.w(NETWORK_TAG,responseJsonStr);
             return true;
         }catch (IOException e){
             Log.e(NETWORK_TAG,e.toString());
@@ -101,7 +139,9 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
         if(result){
             try {
                 data = new JSONObject(responseJsonStr);
-                listener.onReceivedData(data);
+                if(typeRequest == Request.dataRequest) {
+                    listener.onReceivedData(data);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -111,8 +151,10 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     @Override
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
+    }
 
-
+    public static enum Request {
+        videoRequest,dataRequest,reviewsRequest
     }
 
 
