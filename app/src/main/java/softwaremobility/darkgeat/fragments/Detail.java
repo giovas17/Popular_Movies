@@ -36,6 +36,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     public TextView dateMovie;
     public TextView genresMovies;
     private onNetworkDataListener listener;
+    private NetworkConnection.Request type;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,12 +59,6 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         descriptionMovie = (TextView)view.findViewById(R.id.description_movie_detail);
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
         genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
-
-        if(MainActivity.two_views){
-            previewMoview = (ImageView)view.findViewById(R.id.image_preview);
-        }else {
-            Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
-        }
         titleMovie.setText(movie.getTitle());
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
@@ -74,9 +69,20 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         listener = new onNetworkDataListener() {
             @Override
             public void onReceivedData(JSONObject object) {
-
+                if(type == NetworkConnection.Request.videoRequest) {
+                    refreshDataReviews();
+                }
             }
         };
+
+        if(MainActivity.two_views){
+            previewMoview = (ImageView)view.findViewById(R.id.image_preview);
+        }else {
+            Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
+            type = NetworkConnection.Request.videoRequest;
+            NetworkConnection connection = new NetworkConnection(getActivity(), type,listener);
+            connection.execute(new String[]{String.valueOf(movie.getId())});
+        }
 
         return view;
     }
@@ -93,7 +99,61 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         dateMovie.setText(movie.getRelease_date());
         ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
-        NetworkConnection connection = new NetworkConnection(getActivity(), NetworkConnection.Request.videoRequest,listener);
+
+    }
+
+    private void refreshDataReviews(){
+        type = NetworkConnection.Request.reviewsRequest;
+        NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
         connection.execute(new String[]{String.valueOf(movie.getId())});
     }
+/**
+    public ArrayList<Review> getReviews(JSONObject object){
+
+        // ----- Keys from JSON object -------
+
+        final String RESULT_ARRAY = "results";
+        final String DESCRIPTION = "overview";
+        final String RATING = "vote_average";
+        final String POPULARITY = "popularity";
+        final String TOTAL_VOTES = "vote_count";
+        final String PREVIEW = "backdrop_path";
+        final String RELEASE_DATE = "release_date";
+        final String GENRES = "genre_ids";
+        final String BIGGEST_IMAGE_SIZE = "w500//";
+        final String SMALLER_IMAGE_SIZE;
+
+
+        ArrayList<Movie> movies;
+
+        try {
+            JSONArray moviesArray = object.getJSONArray(RESULT_ARRAY);
+            movies = new ArrayList<>();
+
+            for (int i = 0 ; i < moviesArray.length() ; i++){
+                Movie movie = new Movie();
+                JSONObject obj = moviesArray.getJSONObject(i);
+                String poster_path = obj.getString(POSTER);
+                movie.setPoster_thumbnail(BASE_PATH_PICTURE + SMALLER_IMAGE_SIZE + poster_path);
+                poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
+                String preview_path = obj.getString(PREVIEW);
+                preview_path = BASE_PATH_PICTURE + BIGGEST_IMAGE_SIZE + preview_path;
+                movie.setPoster_image_path(poster_path);
+                movie.setPreview_image_path(preview_path);
+                movie.setId(obj.getLong(ID));
+                movie.setTitle(obj.getString(TITLE));
+                movie.setRating(obj.getDouble(RATING));
+                movie.setDescription(obj.getString(DESCRIPTION));
+                movie.setPopularity(obj.getDouble(POPULARITY));
+                movie.setVote_count(obj.getInt(TOTAL_VOTES));
+                movie.setRelease_date(obj.getString(RELEASE_DATE));
+                movie.setGenres(Utils.getGenresMovie(this, obj.getJSONArray(GENRES)));
+                movies.add(movie);
+            }
+            return movies;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }**/
 }

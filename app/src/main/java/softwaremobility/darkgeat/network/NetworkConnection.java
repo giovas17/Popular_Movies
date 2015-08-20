@@ -151,9 +151,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
         if(result){
             try {
                 data = new JSONObject(responseJsonStr);
-                if(typeRequest == Request.dataRequest) {
-                    listener.onReceivedData(data);
-                }
+                listener.onReceivedData(data);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
