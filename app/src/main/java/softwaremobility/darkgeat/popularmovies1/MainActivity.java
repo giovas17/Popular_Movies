@@ -1,7 +1,6 @@
 package softwaremobility.darkgeat.popularmovies1;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -23,7 +22,7 @@ import softwaremobility.darkgeat.fragments.Principal;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
-import softwaremobility.darkgeat.objects.Utils;
+import softwaremobility.darkgeat.utils.Utils;
 
 public class MainActivity extends AppCompatActivity implements onNetworkDataListener {
 
@@ -59,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
             refreshData();
         }else{
             mMovies = savedInstanceState.getParcelableArrayList("key");
+            mSortBy = savedInstanceState.getString("sort");
         }
     }
 
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("key",mMovies);
+        outState.putString("sort",mSortBy);
         super.onSaveInstanceState(outState);
     }
 

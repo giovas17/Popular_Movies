@@ -36,16 +36,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private onMovieSelectedListener listener;
     private boolean isFirstTime;
 
-    public ImageAdapter(Context context, ArrayList<Movie> all_movies) {
+    public ImageAdapter(Context context, ArrayList<Movie> all_movies, boolean fistTime) {
         mContext = context;
         movies = all_movies;
-        isFirstTime = true;
+        isFirstTime = fistTime;
     }
-    public ImageAdapter(Context context, ArrayList<Movie> all_movies, onMovieSelectedListener listener) {
+    public ImageAdapter(Context context, ArrayList<Movie> all_movies, onMovieSelectedListener listener, boolean fistTime) {
         mContext = context;
         movies = all_movies;
         this.listener = listener;
-        isFirstTime = true;
+        isFirstTime = fistTime;
     }
 
     @Override

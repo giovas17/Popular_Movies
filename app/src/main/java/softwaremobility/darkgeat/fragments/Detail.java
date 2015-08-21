@@ -13,11 +13,13 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
+import softwaremobility.darkgeat.objects.Review;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
 import softwaremobility.darkgeat.popularmovies1.R;
 
@@ -37,12 +39,15 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     public TextView genresMovies;
     private onNetworkDataListener listener;
     private NetworkConnection.Request type;
+    private ArrayList<Review> mReviews;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        movie = getArguments().getParcelable("movieSelected");
+
+            movie = getArguments().getParcelable("movieSelected");
+
     }
 
     @Nullable
@@ -59,6 +64,15 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         descriptionMovie = (TextView)view.findViewById(R.id.description_movie_detail);
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
         genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
+
+        if(savedInstanceState != null){
+            movie = savedInstanceState.getParcelable("movie");
+            if(MainActivity.two_views) {
+                previewMoview = (ImageView)view.findViewById(R.id.image_preview);
+                Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
+                Picasso.with(getActivity()).load(movie.getPreview_image_path()).into(previewMoview);
+            }
+        }
         titleMovie.setText(movie.getTitle());
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
@@ -99,6 +113,9 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         dateMovie.setText(movie.getRelease_date());
         ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
+        type = NetworkConnection.Request.videoRequest;
+        NetworkConnection connection = new NetworkConnection(getActivity(), type,listener);
+        connection.execute(new String[]{String.valueOf(movie.getId())});
 
     }
 
@@ -107,7 +124,16 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
         connection.execute(new String[]{String.valueOf(movie.getId())});
     }
-/**
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("movie",movie);
+        if(mReviews != null && mReviews.size() > 0){
+            outState.putParcelableArrayList("reviews",mReviews);
+        }
+        super.onSaveInstanceState(outState);
+    }
+    /**
     public ArrayList<Review> getReviews(JSONObject object){
 
         // ----- Keys from JSON object -------
