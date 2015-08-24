@@ -38,12 +38,14 @@ public class DetailActivity extends AppCompatActivity {
         header = (ImageView)findViewById(R.id.header);
         Picasso.with(this).load(movie.getPreview_image_path()).into(header);
 
-        Detail detail = new Detail();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("movieSelected",movie);
-        detail.setArguments(bundle);
+        if(savedInstanceState == null) {
+            Detail detail = new Detail();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("movieSelected", movie);
+            detail.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,detail).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, detail, MainActivity.FRAGMENT_DETAIL_TAG).commit();
+        }
 
     }
 

@@ -73,8 +73,8 @@ public class JSONParser {
             return null;
         }
     }
-/**
-    public ArrayList<Review> parseToListReviews(JSONObject object) {
+
+    public static ArrayList<Review> parseToListReviews(JSONObject object) {
 
         // ----- Keys from JSON object -------
 
@@ -82,41 +82,32 @@ public class JSONParser {
         final String PAGE = "page";
         final String CONTENT = "content";
         final String AUTHOR = "author";
-        final String TOTAL_PAGES = "total_pages";
-        final String TOTAL_RESULTS = "total_results";
+        final String URL = "url";
 
-
-        ArrayList<Movie> movies;
+        ArrayList<Review> reviews;
 
         try {
-            JSONArray moviesArray = object.getJSONArray(RESULT_ARRAY);
-            movies = new ArrayList<>();
+            int page = object.getInt(PAGE);
+            JSONArray reviewsArray = object.getJSONArray(RESULT_ARRAY);
+            reviews = new ArrayList<>();
 
-            for (int i = 0; i < moviesArray.length(); i++) {
+            for (int i = 0; i < reviewsArray.length(); i++) {
                 Review review = new Review();
-                JSONObject obj = moviesArray.getJSONObject(i);
-                String poster_path = obj.getString(POSTER);
-                review.setPoster_thumbnail(BASE_PATH_PICTURE + SMALLER_IMAGE_SIZE + poster_path);
-                poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
-                String preview_path = obj.getString(PREVIEW);
-                preview_path = BASE_PATH_PICTURE + BIGGEST_IMAGE_SIZE + preview_path;
-                review.setPoster_image_path(poster_path);
-                review.setPreview_image_path(preview_path);
-                review.setId(obj.getLong(ID));
-                review.setTitle(obj.getString(TITLE));
-                review.setRating(obj.getDouble(RATING));
-                review.setDescription(obj.getString(DESCRIPTION));
-                review.setPopularity(obj.getDouble(POPULARITY));
-                review.setVote_count(obj.getInt(TOTAL_VOTES));
-                review.setRelease_date(obj.getString(RELEASE_DATE));
-                review.setGenres(Utils.getGenresMovie(this, obj.getJSONArray(GENRES)));
-                movies.add(review);
+                JSONObject obj = reviewsArray.getJSONObject(i);
+                String content_review = obj.getString(CONTENT);
+                review.setContent(content_review);
+                String author_review = obj.getString(AUTHOR);
+                review.setAuthor(author_review);
+                String url_review = obj.getString(URL);
+                review.setUrl(url_review);
+                review.setPage(page);
+                reviews.add(review);
             }
-            return movies;
+            return reviews;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
     }
-**/
+
 }

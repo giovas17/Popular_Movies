@@ -3,6 +3,8 @@ package softwaremobility.darkgeat.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import softwaremobility.darkgeat.adapters.ReviewsAdapter;
 import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
@@ -22,6 +25,7 @@ import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.objects.Review;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
 import softwaremobility.darkgeat.popularmovies1.R;
+import softwaremobility.darkgeat.utils.JSONParser;
 
 /**
  * Created by darkgeat on 20/07/15.
@@ -39,15 +43,16 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     public TextView genresMovies;
     private onNetworkDataListener listener;
     private NetworkConnection.Request type;
+    private RecyclerView reviews;
     private ArrayList<Review> mReviews;
+    private boolean isPreviusState;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-            movie = getArguments().getParcelable("movieSelected");
-
+        movie = getArguments().getParcelable("movieSelected");
+        isPreviusState = false;
     }
 
     @Nullable
@@ -64,13 +69,16 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         descriptionMovie = (TextView)view.findViewById(R.id.description_movie_detail);
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
         genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
+        reviews = (RecyclerView)view.findViewById(R.id.listReviews);
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable("movie");
+            mReviews = savedInstanceState.getParcelableArrayList("reviews");
             if(MainActivity.two_views) {
                 previewMoview = (ImageView)view.findViewById(R.id.image_preview);
                 Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
                 Picasso.with(getActivity()).load(movie.getPreview_image_path()).into(previewMoview);
+                updatingReviews(mReviews);
             }
         }
         titleMovie.setText(movie.getTitle());
@@ -85,6 +93,8 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             public void onReceivedData(JSONObject object) {
                 if(type == NetworkConnection.Request.videoRequest) {
                     refreshDataReviews();
+                }else if(type == NetworkConnection.Request.reviewsRequest){
+                    refreshReviews(object);
                 }
             }
         };
@@ -94,11 +104,31 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         }else {
             Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
             type = NetworkConnection.Request.videoRequest;
-            NetworkConnection connection = new NetworkConnection(getActivity(), type,listener);
-            connection.execute(new String[]{String.valueOf(movie.getId())});
+            if(savedInstanceState == null) {
+                NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
+                connection.execute(new String[]{String.valueOf(movie.getId())});
+            }
         }
 
         return view;
+    }
+
+    private void refreshReviews(JSONObject object) {
+        mReviews = JSONParser.parseToListReviews(object);
+        updatingReviews(mReviews);
+    }
+
+    private void updatingReviews(ArrayList<Review> mReviews) {
+        if(mReviews == null || mReviews.size() == 0){
+            mReviews = new ArrayList<>();
+            Review review = new Review(getString(R.string.app_name),"There are no Reviews","",0);
+            mReviews.add(review);
+        }
+        reviews.setHasFixedSize(true);
+        reviews.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ReviewsAdapter adapter = new ReviewsAdapter(getActivity(),mReviews);
+        reviews.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -113,9 +143,11 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         dateMovie.setText(movie.getRelease_date());
         ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
         genresMovies.setText(movie.getGenres());
-        type = NetworkConnection.Request.videoRequest;
-        NetworkConnection connection = new NetworkConnection(getActivity(), type,listener);
-        connection.execute(new String[]{String.valueOf(movie.getId())});
+        if (MainActivity.two_views) {
+            type = NetworkConnection.Request.videoRequest;
+            NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
+            connection.execute(new String[]{String.valueOf(movie.getId())});
+        }
 
     }
 
@@ -133,53 +165,5 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         }
         super.onSaveInstanceState(outState);
     }
-    /**
-    public ArrayList<Review> getReviews(JSONObject object){
 
-        // ----- Keys from JSON object -------
-
-        final String RESULT_ARRAY = "results";
-        final String DESCRIPTION = "overview";
-        final String RATING = "vote_average";
-        final String POPULARITY = "popularity";
-        final String TOTAL_VOTES = "vote_count";
-        final String PREVIEW = "backdrop_path";
-        final String RELEASE_DATE = "release_date";
-        final String GENRES = "genre_ids";
-        final String BIGGEST_IMAGE_SIZE = "w500//";
-        final String SMALLER_IMAGE_SIZE;
-
-
-        ArrayList<Movie> movies;
-
-        try {
-            JSONArray moviesArray = object.getJSONArray(RESULT_ARRAY);
-            movies = new ArrayList<>();
-
-            for (int i = 0 ; i < moviesArray.length() ; i++){
-                Movie movie = new Movie();
-                JSONObject obj = moviesArray.getJSONObject(i);
-                String poster_path = obj.getString(POSTER);
-                movie.setPoster_thumbnail(BASE_PATH_PICTURE + SMALLER_IMAGE_SIZE + poster_path);
-                poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
-                String preview_path = obj.getString(PREVIEW);
-                preview_path = BASE_PATH_PICTURE + BIGGEST_IMAGE_SIZE + preview_path;
-                movie.setPoster_image_path(poster_path);
-                movie.setPreview_image_path(preview_path);
-                movie.setId(obj.getLong(ID));
-                movie.setTitle(obj.getString(TITLE));
-                movie.setRating(obj.getDouble(RATING));
-                movie.setDescription(obj.getString(DESCRIPTION));
-                movie.setPopularity(obj.getDouble(POPULARITY));
-                movie.setVote_count(obj.getInt(TOTAL_VOTES));
-                movie.setRelease_date(obj.getString(RELEASE_DATE));
-                movie.setGenres(Utils.getGenresMovie(this, obj.getJSONArray(GENRES)));
-                movies.add(movie);
-            }
-            return movies;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }**/
 }
