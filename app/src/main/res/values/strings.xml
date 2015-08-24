@@ -25,9 +25,10 @@
     <string name="title">Title</string>
     <string name="popularity">Popularity</string>
     <string name="rating">Rating</string>
-    <string name="date">Date of Release</string>
-    <string name="sinopsis">Synopsis</string>
+    <string name="date">Release Date</string>
+    <string name="synopsis">Synopsis</string>
     <string name="genre">Genres</string>
+    <string name="reviews">Reviews</string>
     <string name="rating_value"><gio:g id="rating_val">%1$1.0f</gio:g> / 10 -> <gio:g id="totalVotes">%2$s</gio:g> votes</string>
     <!-- List of Genres -->
     <string name="genre_action">Action</string>
