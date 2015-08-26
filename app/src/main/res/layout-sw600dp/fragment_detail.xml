@@ -231,17 +231,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
+                        android:id="@+id/navBack"
                         android:clickable="true"
                         android:layout_gravity="center"
                         android:background="@drawable/arrow_left"/>
                     <android.support.v4.view.ViewPager
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:id="@+id/pagerTrailers"/>
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
+                        android:id="@+id/navForward"
                         android:clickable="true"
                         android:layout_gravity="center"
                         android:background="@drawable/arrow_right"/>

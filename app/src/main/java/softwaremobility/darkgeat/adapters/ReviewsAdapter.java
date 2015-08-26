@@ -40,7 +40,8 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         holder.authorReview.setText(mContext.getString(R.string.author,data.get(position).getAuthor()));
         holder.contentReview.setText(data.get(position).getContent());
         holder.urlReview.setText(data.get(position).getUrl());
-        holder.labelUrl.setVisibility(View.VISIBLE);
+        if (!data.get(position).getAuthor().equals(mContext.getString(R.string.app_name)))
+            holder.labelUrl.setVisibility(View.VISIBLE);
     }
 
     @Override

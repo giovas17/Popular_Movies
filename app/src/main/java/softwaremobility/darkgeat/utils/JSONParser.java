@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.objects.Review;
+import softwaremobility.darkgeat.objects.Trailer;
 
 import static softwaremobility.darkgeat.popularmovies1.MainActivity.obtainingScreenSize;
 
@@ -104,6 +105,45 @@ public class JSONParser {
                 reviews.add(review);
             }
             return reviews;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ArrayList<Trailer> parseToListTrailers(JSONObject object) {
+
+        // ----- Keys from JSON object -------
+
+        final String RESULT_ARRAY = "results";
+        final String NAME = "name";
+        final String SITE = "site";
+        final String SIZE = "size";
+        final String TYPE = "type";
+        final String KEY = "key";
+
+        ArrayList<Trailer> trailers;
+
+        try {
+            JSONArray reviewsArray = object.getJSONArray(RESULT_ARRAY);
+            trailers = new ArrayList<>();
+
+            for (int i = 0; i < reviewsArray.length(); i++) {
+                Trailer trailer = new Trailer();
+                JSONObject obj = reviewsArray.getJSONObject(i);
+                String name_trailer = obj.getString(NAME);
+                trailer.setName(name_trailer);
+                String key_trailer = obj.getString(KEY);
+                trailer.setKey(key_trailer);
+                String site_trailer = obj.getString(SITE);
+                trailer.setSite(site_trailer);
+                String type_trailer = obj.getString(TYPE);
+                trailer.setType(type_trailer);
+                int size = obj.getInt(SIZE);
+                trailer.setSize(size);
+                trailers.add(trailer);
+            }
+            return trailers;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

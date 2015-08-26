@@ -3,6 +3,9 @@ package softwaremobility.darkgeat.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +26,7 @@ import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.objects.Review;
+import softwaremobility.darkgeat.objects.Trailer;
 import softwaremobility.darkgeat.popularmovies1.MainActivity;
 import softwaremobility.darkgeat.popularmovies1.R;
 import softwaremobility.darkgeat.utils.JSONParser;
@@ -33,26 +37,29 @@ import softwaremobility.darkgeat.utils.JSONParser;
 public class Detail extends Fragment implements onMovieSelectedListener {
 
     private Movie movie = null;
-    public ImageView posterMovie;
-    public ImageView previewMoview;
-    public TextView titleMovie;
-    public TextView popularityMovie;
-    public TextView ratingMovie;
-    public TextView descriptionMovie;
-    public TextView dateMovie;
-    public TextView genresMovies;
+    private ImageView posterMovie;
+    private ImageView previewMoview;
+    private TextView titleMovie;
+    private TextView popularityMovie;
+    private TextView ratingMovie;
+    private TextView descriptionMovie;
+    private TextView dateMovie;
+    private TextView genresMovies;
+    private ViewPager viewPagerTrailers;
     private onNetworkDataListener listener;
     private NetworkConnection.Request type;
     private RecyclerView reviews;
     private ArrayList<Review> mReviews;
-    private boolean isPreviusState;
+    private ArrayList<Trailer> mTrailers;
+    private ImageView backNavigation;
+    private ImageView nextNavigation;
+    private PagerAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         movie = getArguments().getParcelable("movieSelected");
-        isPreviusState = false;
     }
 
     @Nullable
@@ -70,6 +77,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         dateMovie = (TextView)view.findViewById(R.id.date_release_movie_detail);
         genresMovies = (TextView)view.findViewById(R.id.genres_movie_detail);
         reviews = (RecyclerView)view.findViewById(R.id.listReviews);
+        viewPagerTrailers = (ViewPager)view.findViewById(R.id.pagerTrailers);
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable("movie");
@@ -78,8 +86,8 @@ public class Detail extends Fragment implements onMovieSelectedListener {
                 previewMoview = (ImageView)view.findViewById(R.id.image_preview);
                 Picasso.with(getActivity()).load(movie.getPoster_thumbnail()).into(posterMovie);
                 Picasso.with(getActivity()).load(movie.getPreview_image_path()).into(previewMoview);
-                updatingReviews(mReviews);
             }
+            updatingReviews(mReviews);
         }
         titleMovie.setText(movie.getTitle());
         popularityMovie.setText(format.format(movie.getPopularity()));
@@ -92,6 +100,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             @Override
             public void onReceivedData(JSONObject object) {
                 if(type == NetworkConnection.Request.videoRequest) {
+                    refreshTrailers(object);
                     refreshDataReviews();
                 }else if(type == NetworkConnection.Request.reviewsRequest){
                     refreshReviews(object);
@@ -110,7 +119,57 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             }
         }
 
+        backNavigation = (ImageView) view.findViewById(R.id.navBack);
+        backNavigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (viewPagerTrailers != null) {
+                    if (viewPagerTrailers.getCurrentItem() > 0) {
+                        backNavigation.setEnabled(true);
+                        viewPagerTrailers.setCurrentItem(viewPagerTrailers.getCurrentItem() - 1);
+                        if (viewPagerTrailers.getCurrentItem() == 0) {
+                            backNavigation.setEnabled(false);
+                        }
+                    } else {
+                        backNavigation.setEnabled(false);
+                    }
+
+                    if (viewPagerTrailers.getCurrentItem() == adapter.getCount() - 1) {
+                        nextNavigation.setEnabled(false);
+                    } else {
+                        nextNavigation.setEnabled(true);
+                    }
+                }
+            }
+        });
+
+        nextNavigation = (ImageView) view.findViewById(R.id.navForward);
+        nextNavigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (viewPagerTrailers != null) {
+                    viewPagerTrailers.setCurrentItem(viewPagerTrailers.getCurrentItem() + 1);
+                    if (viewPagerTrailers.getCurrentItem() == adapter.getCount() - 1) {
+                        nextNavigation.setEnabled(false);
+                    } else {
+                        nextNavigation.setEnabled(true);
+                    }
+
+                    if (viewPagerTrailers.getCurrentItem() > 0) {
+                        backNavigation.setEnabled(true);
+                    } else {
+                        backNavigation.setEnabled(false);
+                    }
+                }
+            }
+        });
+
         return view;
+    }
+
+    private void refreshTrailers(JSONObject object){
+        mTrailers = JSONParser.parseToListTrailers(object);
+        updatingTrailers(mTrailers);
     }
 
     private void refreshReviews(JSONObject object) {
@@ -152,9 +211,16 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     }
 
     private void refreshDataReviews(){
+        updatingTrailers(mTrailers);
         type = NetworkConnection.Request.reviewsRequest;
         NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
         connection.execute(new String[]{String.valueOf(movie.getId())});
+    }
+
+    private void updatingTrailers(ArrayList<Trailer> trailerArrayList) {
+        adapter = new PagerAdapter(getActivity().getSupportFragmentManager(),trailerArrayList,movie.getPoster_image_path());
+        viewPagerTrailers.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -165,5 +231,29 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         }
         super.onSaveInstanceState(outState);
     }
+
+    public class PagerAdapter extends FragmentPagerAdapter{
+
+        private ArrayList<Trailer> trailers;
+        private String imagePath;
+
+        public PagerAdapter(FragmentManager fm, ArrayList<Trailer> trailerArrayList, String image){
+            super(fm);
+            trailers = trailerArrayList;
+            imagePath = image;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return TrailerFragment.Create(trailers.get(position),imagePath);
+        }
+
+        @Override
+        public int getCount() {
+            return trailers.size();
+        }
+    }
+
+
 
 }
