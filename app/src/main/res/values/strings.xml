@@ -34,6 +34,7 @@
     <string name="url_label">Url: </string>
     <string name="youtube">YouTube Video</string>
     <string name="rating_value">(<gio:g id="rating_val">%1$1.0f</gio:g> / 10) from <gio:g id="totalVotes">%2$s</gio:g> votes</string>
+    <string name="size_video"><gio:g id="size">%1$1s</gio:g> px</string>
     <!-- List of Genres -->
     <string name="genre_action">Action</string>
     <string name="genre_adventure">Adventure</string>

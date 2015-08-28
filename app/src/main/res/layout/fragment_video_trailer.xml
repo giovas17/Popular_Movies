@@ -8,26 +8,31 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/container_trailer"
+        android:clickable="true"
+        android:background="@drawable/background_item_trailer">
 
         <ImageView
             android:layout_width="80dp"
             android:layout_height="100dp"
             android:src="@drawable/test_android"
             android:scaleType="centerCrop"
+            android:clickable="true"
             android:adjustViewBounds="true"
             android:id="@+id/imageTrailer" />
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/imagePlayTrailer"
-            android:layout_marginLeft="@dimen/space"
-            android:layout_marginRight="@dimen/normal_padding"
-            android:src="@android:drawable/ic_media_play"
+            android:clickable="true"
+            android:src="@drawable/youtube_play"
+            android:layout_marginRight="@dimen/space"
+            android:layout_marginEnd="@dimen/space"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/imageTrailer"
-            android:layout_toEndOf="@+id/imageTrailer"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/imageTrailer" />
 
         <TextView
@@ -37,16 +42,22 @@
             android:text="El Caballero de la Noche"
             android:textStyle="bold"
             android:maxLines="1"
-            android:layout_marginTop="@dimen/navigation_elevation"
+            android:clickable="true"
             android:id="@+id/textNameTrailer"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/imagePlayTrailer"
-            android:layout_toEndOf="@+id/imagePlayTrailer" />
+            android:layout_marginTop="@dimen/normal_padding"
+            android:layout_marginLeft="@dimen/normal_padding"
+            android:layout_marginStart="@dimen/normal_padding"
+            android:layout_toRightOf="@+id/imageTrailer"
+            android:layout_toEndOf="@+id/imageTrailer"
+            android:layout_toLeftOf="@+id/imagePlayTrailer"
+            android:layout_toStartOf="@+id/imagePlayTrailer" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="tipo"
+            android:clickable="true"
             android:id="@+id/typeTrailer"
             android:layout_alignLeft="@+id/textNameTrailer"
             android:layout_alignStart="@+id/textNameTrailer"
@@ -58,9 +69,9 @@
             android:id="@+id/imageYoutube"
             android:src="@drawable/inside_youtube"
             android:layout_below="@+id/typeTrailer"
-            android:layout_alignBottom="@+id/textYouTube"
             android:layout_alignLeft="@+id/typeTrailer"
-            android:layout_alignStart="@+id/typeTrailer" />
+            android:layout_alignStart="@+id/typeTrailer"
+            android:layout_alignBottom="@+id/imageTrailer" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,13 +79,14 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/youtube"
             android:textStyle="italic"
+            android:clickable="true"
             android:id="@+id/textYouTube"
-            android:layout_marginRight="@dimen/space"
-            android:layout_marginEnd="@dimen/space"
-            android:layout_marginBottom="@dimen/space"
-            android:layout_alignBottom="@+id/imageTrailer"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignBottom="@+id/imageYoutube"
+            android:layout_toRightOf="@+id/imageYoutube"
+            android:layout_marginLeft="@dimen/normal_padding"
+            android:layout_marginStart="@dimen/normal_padding"
+            android:layout_marginBottom="@dimen/normal_padding"
+            android:layout_toEndOf="@+id/typeTrailer" />
 
     </RelativeLayout>
 
