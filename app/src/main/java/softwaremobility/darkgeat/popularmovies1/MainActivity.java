@@ -1,7 +1,6 @@
 package softwaremobility.darkgeat.popularmovies1;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -23,7 +22,9 @@ import softwaremobility.darkgeat.fragments.Principal;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
-import softwaremobility.darkgeat.objects.Utils;
+import softwaremobility.darkgeat.utils.Utils;
+
+import static softwaremobility.darkgeat.utils.JSONParser.getMoviesData;
 
 public class MainActivity extends AppCompatActivity implements onNetworkDataListener {
 
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
             refreshData();
         }else{
             mMovies = savedInstanceState.getParcelableArrayList("key");
+            mSortBy = savedInstanceState.getString("sort");
         }
     }
 
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("key",mMovies);
+        outState.putString("sort",mSortBy);
         super.onSaveInstanceState(outState);
     }
 
@@ -109,69 +112,13 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     @Override
     public void onReceivedData(JSONObject object) {
         data = object;
-        mMovies = getMoviesData(data);
+        mMovies = getMoviesData(data,this);
         Principal main = new Principal();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("key", mMovies);
         main.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.principal_container,
                 main, FRAGMENT_PRINCIPAL_TAG).commit();
-    }
-
-    public ArrayList<Movie> getMoviesData(JSONObject object){
-
-        final String BASE_PATH_PICTURE = "http://image.tmdb.org/t/p/";
-        final String IMAGE_SIZE_PX;
-        final String RESULT_ARRAY = "results";
-        final String POSTER = "poster_path";
-        final String TITLE = "original_title";
-        final String ID = "id";
-        final String DESCRIPTION = "overview";
-        final String RATING = "vote_average";
-        final String POPULARITY = "popularity";
-        final String TOTAL_VOTES = "vote_count";
-        final String PREVIEW = "backdrop_path";
-        final String RELEASE_DATE = "release_date";
-        final String GENRES = "genre_ids";
-        final String BIGGEST_IMAGE_SIZE = "w500//";
-        final String SMALLER_IMAGE_SIZE;
-
-        //if the width of the screen is bigger than 1000px will set w500
-        int width = obtainingScreenSize(this)[0];
-        IMAGE_SIZE_PX = width > 1000 ? "w500//" : "w342//";
-        SMALLER_IMAGE_SIZE = (IMAGE_SIZE_PX.contains("342")) ? "w185//" : "w342//";
-
-        ArrayList<Movie> movies;
-
-        try {
-            JSONArray moviesArray = object.getJSONArray(RESULT_ARRAY);
-            movies = new ArrayList<>();
-
-            for (int i = 0 ; i < moviesArray.length() ; i++){
-                Movie movie = new Movie();
-                JSONObject obj = moviesArray.getJSONObject(i);
-                String poster_path = obj.getString(POSTER);
-                movie.setPoster_thumbnail(BASE_PATH_PICTURE + SMALLER_IMAGE_SIZE + poster_path);
-                poster_path = BASE_PATH_PICTURE + IMAGE_SIZE_PX + poster_path;
-                String preview_path = obj.getString(PREVIEW);
-                preview_path = BASE_PATH_PICTURE + BIGGEST_IMAGE_SIZE + preview_path;
-                movie.setPoster_image_path(poster_path);
-                movie.setPreview_image_path(preview_path);
-                movie.setId(obj.getLong(ID));
-                movie.setTitle(obj.getString(TITLE));
-                movie.setRating(obj.getDouble(RATING));
-                movie.setDescription(obj.getString(DESCRIPTION));
-                movie.setPopularity(obj.getDouble(POPULARITY));
-                movie.setVote_count(obj.getInt(TOTAL_VOTES));
-                movie.setRelease_date(obj.getString(RELEASE_DATE));
-                movie.setGenres(Utils.getGenresMovie(this, obj.getJSONArray(GENRES)));
-                movies.add(movie);
-            }
-            return movies;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     public static int[] obtainingScreenSize(Context context){

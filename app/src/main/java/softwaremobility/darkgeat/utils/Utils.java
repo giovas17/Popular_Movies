@@ -1,4 +1,4 @@
-package softwaremobility.darkgeat.objects;
+package softwaremobility.darkgeat.utils;
 
 
 import android.content.Context;

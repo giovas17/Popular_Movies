@@ -1,16 +1,10 @@
 package softwaremobility.darkgeat.network;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -19,12 +13,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import softwaremobility.darkgeat.adapters.ImageAdapter;
+
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
-import softwaremobility.darkgeat.objects.Movie;
-import softwaremobility.darkgeat.objects.Utils;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
@@ -37,7 +27,6 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     private onNetworkDataListener listener;
     private JSONObject data;
     private String responseJsonStr = null;
-    private List<Movie> movies;
     private Request typeRequest;
 
     public NetworkConnection(Context c){
@@ -46,9 +35,9 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
         typeRequest = Request.dataRequest;
     }
 
-    public NetworkConnection(Context c, Request type){
+    public NetworkConnection(Context c, Request type, onNetworkDataListener networkDataListener){
         mContext = c;
-        listener = (onNetworkDataListener) mContext;
+        listener = networkDataListener;
         typeRequest = type;
     }
 
@@ -85,6 +74,19 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
                         .appendPath(MOVIE_PATH)
                         .appendPath(idMovie)
                         .appendPath(VIDEOS_PATH)
+                        .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
+                        .build();
+                break;
+            }
+            case reviewsRequest:{
+                final String REVIEWS_PATH = "reviews";
+                idMovie = params[0];
+
+                //Construction of the request URL
+                requestURL = Uri.parse(BASE_URL).buildUpon()
+                        .appendPath(MOVIE_PATH)
+                        .appendPath(idMovie)
+                        .appendPath(REVIEWS_PATH)
                         .appendQueryParameter(APIKEY_PARAM, mContext.getString(R.string.api_key))
                         .build();
                 break;
@@ -139,9 +141,7 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
         if(result){
             try {
                 data = new JSONObject(responseJsonStr);
-                if(typeRequest == Request.dataRequest) {
-                    listener.onReceivedData(data);
-                }
+                listener.onReceivedData(data);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

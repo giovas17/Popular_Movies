@@ -39,11 +39,12 @@ public class Principal extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_principal,null,false);
         grid = (RecyclerView)view.findViewById(R.id.gridView);
-        makeAnUpdate(movies);
+        boolean resume = savedInstanceState == null ? true : false;
+        makeAnUpdate(movies, resume);
         return view;
     }
 
-    public void makeAnUpdate(ArrayList<Movie> movies){
+    public void makeAnUpdate(ArrayList<Movie> movies, boolean resuming){
         int numColumns = 3;
         int[] sizes = MainActivity.obtainingScreenSize(getActivity());
         int width = sizes[0];
@@ -64,9 +65,9 @@ public class Principal extends Fragment {
         grid.setLayoutManager(glm);
         ImageAdapter adapter;
         if(MainActivity.two_views){
-            adapter = new ImageAdapter(getActivity(),movies, (onMovieSelectedListener) getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_DETAIL_TAG));
+            adapter = new ImageAdapter(getActivity(),movies, (onMovieSelectedListener) getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_DETAIL_TAG), resuming);
         }else {
-            adapter = new ImageAdapter(getActivity(),movies);
+            adapter = new ImageAdapter(getActivity(),movies, resuming);
         }
         grid.setAdapter(adapter);
         adapter.notifyDataSetChanged();

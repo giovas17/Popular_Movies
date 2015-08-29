@@ -65,6 +65,15 @@
                         android:textColor="@android:color/black"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="10"
+                        android:id="@+id/ratingBar"
+                        android:progress="5"
+                        android:max="10"
+                        style="?android:attr/ratingBarStyleSmall"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -160,7 +169,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sinopsis"
+                android:text="@string/synopsis"
                 android:textColor="@color/primary_color"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
@@ -177,6 +186,152 @@
                 android:id="@+id/description_movie_detail"
                 android:textColor="@android:color/black"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_padding"
+        android:id="@+id/card4"
+        app:cardBackgroundColor="@color/card_background"
+        android:layout_below="@+id/card3"
+        app:cardElevation="@dimen/elevation">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/small_padding">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trailers"
+                    android:id="@+id/labelTrailers"
+                    android:textColor="@color/primary_color"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="30"
+                    android:textStyle="bold"
+                    android:textColor="@color/accent_color"
+                    android:id="@+id/totalTrailers"
+                    android:visibility="gone"
+                    android:layout_alignBaseline="@+id/labelTrailers"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="of"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_color"
+                    android:id="@+id/labelOF"
+                    android:visibility="gone"
+                    android:layout_marginRight="@dimen/space"
+                    android:layout_marginEnd="@dimen/space"
+                    android:layout_alignBaseline="@+id/labelTrailers"
+                    android:layout_toLeftOf="@+id/totalTrailers"
+                    android:layout_toStartOf="@+id/totalTrailers"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textStyle="bold"
+                    android:textColor="@color/accent_color"
+                    android:id="@+id/currentPage"
+                    android:visibility="gone"
+                    android:layout_marginRight="@dimen/space"
+                    android:layout_marginEnd="@dimen/space"
+                    android:layout_alignBaseline="@+id/labelTrailers"
+                    android:layout_toLeftOf="@+id/labelOF"
+                    android:layout_toStartOf="@+id/labelOF"/>
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_color"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:clickable="true"
+                    android:id="@+id/navBack"
+                    android:layout_gravity="center"
+                    android:background="@drawable/arrow_left"/>
+                <android.support.v4.view.ViewPager
+                    android:layout_width="0dp"
+                    android:layout_height="110dp"
+                    android:layout_weight="1"
+                    android:id="@+id/pagerTrailers"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:id="@+id/navForward"
+                    android:clickable="true"
+                    android:layout_gravity="center"
+                    android:background="@drawable/arrow_right"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_padding"
+        android:id="@+id/card5"
+        app:cardBackgroundColor="@color/card_background"
+        android:layout_below="@+id/card4"
+        app:cardElevation="@dimen/elevation">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/small_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews"
+                android:textColor="@color/primary_color"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_color"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="250dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:id="@+id/listReviews" />
 
         </LinearLayout>
 
