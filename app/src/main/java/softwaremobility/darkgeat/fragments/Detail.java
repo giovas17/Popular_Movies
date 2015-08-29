@@ -4,12 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,10 +102,9 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
         dateMovie.setText(movie.getRelease_date());
-        ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
-        genresMovies.setText(movie.getGenres());
-
         int progress = (int)movie.getRating() * 2;
+        ratingMovie.setText(getActivity().getString(R.string.rating_value, (progress / 2), movie.getVote_count()));
+        genresMovies.setText(movie.getGenres());
         stars.setProgress(progress);
 
         listener = new onNetworkDataListener() {
@@ -129,7 +126,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             type = NetworkConnection.Request.videoRequest;
             if(savedInstanceState == null) {
                 NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
-                connection.execute(new String[]{String.valueOf(movie.getId())});
+                connection.execute(String.valueOf(movie.getId()));
             }
         }
 
@@ -217,14 +214,15 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         popularityMovie.setText(format.format(movie.getPopularity()));
         descriptionMovie.setText(movie.getDescription());
         dateMovie.setText(movie.getRelease_date());
-        ratingMovie.setText(getActivity().getString(R.string.rating_value, movie.getRating(), movie.getVote_count()));
-        genresMovies.setText(movie.getGenres());
         int progress = (int)movie.getRating() * 2;
+        ratingMovie.setText(getActivity().getString(R.string.rating_value, progress / 2, movie.getVote_count()));
+        genresMovies.setText(movie.getGenres());
+
         stars.setProgress(progress);
         if (MainActivity.two_views) {
             type = NetworkConnection.Request.videoRequest;
             NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
-            connection.execute(new String[]{String.valueOf(movie.getId())});
+            connection.execute(String.valueOf(movie.getId()));
         }
 
     }
@@ -233,7 +231,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         updatingTrailers(mTrailers);
         type = NetworkConnection.Request.reviewsRequest;
         NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
-        connection.execute(new String[]{String.valueOf(movie.getId())});
+        connection.execute(String.valueOf(movie.getId()));
     }
 
     private void updatingTrailers(final ArrayList<Trailer> trailerArrayList) {

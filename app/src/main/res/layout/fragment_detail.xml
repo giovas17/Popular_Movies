@@ -228,7 +228,8 @@
                     android:id="@+id/totalTrailers"
                     android:visibility="gone"
                     android:layout_alignBaseline="@+id/labelTrailers"
-                    android:layout_alignParentRight="true"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -239,8 +240,10 @@
                     android:id="@+id/labelOF"
                     android:visibility="gone"
                     android:layout_marginRight="@dimen/space"
+                    android:layout_marginEnd="@dimen/space"
                     android:layout_alignBaseline="@+id/labelTrailers"
-                    android:layout_toLeftOf="@+id/totalTrailers" />
+                    android:layout_toLeftOf="@+id/totalTrailers"
+                    android:layout_toStartOf="@+id/totalTrailers"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -251,8 +254,10 @@
                     android:id="@+id/currentPage"
                     android:visibility="gone"
                     android:layout_marginRight="@dimen/space"
+                    android:layout_marginEnd="@dimen/space"
                     android:layout_alignBaseline="@+id/labelTrailers"
-                    android:layout_toLeftOf="@+id/labelOF"/>
+                    android:layout_toLeftOf="@+id/labelOF"
+                    android:layout_toStartOf="@+id/labelOF"/>
             </RelativeLayout>
 
             <View
