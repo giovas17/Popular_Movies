@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -22,6 +24,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import softwaremobility.darkgeat.adapters.ReviewsAdapter;
+import softwaremobility.darkgeat.data.DataBase;
+import softwaremobility.darkgeat.listeners.onFavouriteSelectedListener;
 import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
@@ -35,7 +39,7 @@ import softwaremobility.darkgeat.utils.JSONParser;
 /**
  * Created by darkgeat on 20/07/15.
  */
-public class Detail extends Fragment implements onMovieSelectedListener {
+public class Detail extends Fragment implements onMovieSelectedListener,onFavouriteSelectedListener{
 
     private Movie movie = null;
     private ImageView posterMovie;
@@ -57,6 +61,8 @@ public class Detail extends Fragment implements onMovieSelectedListener {
     private ImageView nextNavigation;
     private RatingBar stars;
     private PagerAdapter adapter;
+    private Toast men;
+    private String revs,trails;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +91,9 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         labelOF = (TextView)view.findViewById(R.id.labelOF);
         totalPages = (TextView)view.findViewById(R.id.totalTrailers);
         stars = (RatingBar)view.findViewById(R.id.ratingBar);
+        backNavigation = (ImageView) view.findViewById(R.id.navBack);
+        nextNavigation = (ImageView) view.findViewById(R.id.navForward);
+        men = new Toast(getActivity());
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable("movie");
@@ -97,6 +106,8 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             }
             updatingReviews(mReviews);
             updatingTrailers(mTrailers);
+            revs = savedInstanceState.getString("revs");
+            trails = savedInstanceState.getString("trails");
         }
         titleMovie.setText(movie.getTitle());
         popularityMovie.setText(format.format(movie.getPopularity()));
@@ -130,7 +141,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             }
         }
 
-        backNavigation = (ImageView) view.findViewById(R.id.navBack);
+
         backNavigation.setEnabled(false);
         backNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +166,6 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             }
         });
 
-        nextNavigation = (ImageView) view.findViewById(R.id.navForward);
         backNavigation.setEnabled(false);
         nextNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,11 +193,13 @@ public class Detail extends Fragment implements onMovieSelectedListener {
 
     private void refreshTrailers(JSONObject object){
         mTrailers = JSONParser.parseToListTrailers(object);
+        trails = object.toString();
         updatingTrailers(mTrailers);
     }
 
     private void refreshReviews(JSONObject object) {
         mReviews = JSONParser.parseToListReviews(object);
+        revs = object.toString();
         updatingReviews(mReviews);
     }
 
@@ -223,6 +235,7 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             type = NetworkConnection.Request.videoRequest;
             NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
             connection.execute(String.valueOf(movie.getId()));
+            MainActivity.movie = movie;
         }
 
     }
@@ -241,6 +254,14 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             totalPages.setVisibility(View.VISIBLE);
             currentPage.setText("1");
             totalPages.setText(String.valueOf(trailerArrayList.size()));
+            if (MainActivity.two_views) {
+                if (trailerArrayList.size() > 1) {
+                    nextNavigation.setEnabled(true);
+                } else {
+                    nextNavigation.setEnabled(false);
+                }
+                backNavigation.setEnabled(false);
+            }
         }
         if(adapter!=null){
             viewPagerTrailers.removeAllViews();
@@ -285,7 +306,34 @@ public class Detail extends Fragment implements onMovieSelectedListener {
         if (mTrailers != null && mTrailers.size() > 0){
             outState.putParcelableArrayList("trailers",mTrailers);
         }
+        if(revs.length() > 0 || revs != null){
+            outState.putString("revs",revs);
+        }
+        if(trails.length() > 0 || trails != null){
+            outState.putString("trails",trails);
+        }
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public int onSelectedMovieAsFavorite(Movie movie) {
+        int resource;
+        DataBase dataBase = new DataBase(getActivity());
+        if (movie.isFavorite()){
+            resource = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+            men.cancel();
+            men = Toast.makeText(getActivity(),"You unmarked " + movie.getTitle() + " as Favorite",Toast.LENGTH_LONG);
+            men.show();
+            dataBase.removeMovie(movie.getId());
+        }else{
+            resource = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+            men.cancel();
+            men = Toast.makeText(getActivity(),"You marked " + movie.getTitle() + " as Favorite",Toast.LENGTH_LONG);
+            men.show();
+            dataBase.newEntryMovies(movie,revs,trails);
+        }
+        movie.setFavorite(!movie.isFavorite());
+        return resource;
     }
 
     public class PagerAdapter extends FragmentStatePagerAdapter{
@@ -309,7 +357,6 @@ public class Detail extends Fragment implements onMovieSelectedListener {
             return trailers.size();
         }
     }
-
 
 
 }

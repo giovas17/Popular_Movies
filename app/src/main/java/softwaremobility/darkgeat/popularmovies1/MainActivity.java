@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,8 +19,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import softwaremobility.darkgeat.data.DataBase;
 import softwaremobility.darkgeat.fragments.Detail;
 import softwaremobility.darkgeat.fragments.Principal;
+import softwaremobility.darkgeat.listeners.onFavouriteSelectedListener;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
@@ -34,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     private JSONObject data;
     private String mSortBy;
     private ArrayList<Movie> mMovies;
+    private onFavouriteSelectedListener listener;
+    private FloatingActionButton favorite;
+    public static Movie movie = null;
     public static boolean two_views = false;
 
     @Override
@@ -51,8 +58,16 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
             if(two_views){
                 Detail detail = new Detail();
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("movieSelected",new Movie());
+                bundle.putParcelable("movieSelected", new Movie());
                 detail.setArguments(bundle);
+                listener = detail;
+                favorite = (FloatingActionButton)findViewById(R.id.fab);
+                favorite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        favorite.setImageResource(listener.onSelectedMovieAsFavorite(movie));
+                    }
+                });
                 getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,
                         detail,FRAGMENT_DETAIL_TAG).commit();
             }
@@ -61,6 +76,16 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
         }else{
             mMovies = savedInstanceState.getParcelableArrayList("key");
             mSortBy = savedInstanceState.getString("sort");
+            if (two_views){
+                listener = (onFavouriteSelectedListener) getSupportFragmentManager().findFragmentByTag(FRAGMENT_DETAIL_TAG);
+                favorite = (FloatingActionButton)findViewById(R.id.fab);
+                favorite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        favorite.setImageResource(listener.onSelectedMovieAsFavorite(movie));
+                    }
+                });
+            }
         }
     }
 
@@ -129,4 +154,5 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
         int height = size.y;
         return (new int[]{width,height});
     }
+
 }

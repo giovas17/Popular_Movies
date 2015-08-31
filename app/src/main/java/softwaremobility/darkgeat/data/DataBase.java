@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 
+import softwaremobility.darkgeat.objects.Movie;
+import softwaremobility.darkgeat.popularmovies1.R;
+
 /**
  * Created by darkgeat on 17/07/15.
  */
@@ -22,6 +25,9 @@ public class DataBase {
     private static final String Key_Popularity = "popularity";
     private static final String Key_Rating = "rating";
     private static final String Key_Description = "summary";
+    private static final String Key_Reviews = "reviews";
+    private static final String Key_Trailers = "trailers";
+    private static final String Key_Thumbnail = "thumbnail";
     private static final String Key_Poster = "poster";
     private static final String Key_Preview = "preview";
     /** --------------------------------- Data Base Version ---------------------------------**/
@@ -33,8 +39,11 @@ public class DataBase {
                                             Key_Description + " TEXT NOT NULL, " +
                                             Key_Popularity + " FLOAT, " +
                                             Key_Rating + " FLOAT, " +
-                                            Key_Poster + " BLOB, " +
-                                            Key_Preview + " BLOB);";
+                                            Key_Reviews + " TEXT NOT NULL, " +
+                                            Key_Trailers + " TEXT NOT NULL, " +
+                                            Key_Thumbnail + " TEXT NOT NULL, " +
+                                            Key_Poster + " TEXT NOT NULL, " +
+                                            Key_Preview + " TEXT);";
     /** ---------------------------------- SQLite Helper ------------------------------------**/
     private MyHelper myDB;
     private SQLiteDatabase myDataBase;
@@ -97,19 +106,25 @@ public class DataBase {
      * @param description String that represents the description of the movie.
      * @param popularity String that represents the popularity value of the movie.
      * @param rating String that represents the rating value of the movie.
+     * @param reviews String that represents the JSON string of reviews.
+     * @param trailers String that represents the JSON string of trailers.
+     * @param thumbnail String that represents the thumbnail path of the movie.
      * @param poster String that represents the poster path of the movie.
      * @param preview String that represents the preview path of the movie.
      */
-    public void newEntryMovies(String id, String title, String description, String popularity, String rating, String poster, String preview){
+    public void newEntryMovies(Movie movie, String reviews, String trailers){
         open();
         ContentValues registro = new ContentValues();
-        registro.put(Key_Id, Integer.valueOf(id));
-        registro.put(Key_Title, title);
-        registro.put(Key_Description, description);
-        registro.put(Key_Popularity, Float.valueOf(popularity));
-        registro.put(Key_Rating, Float.valueOf(rating));
-        registro.put(Key_Poster, poster);
-        registro.put(Key_Preview, preview);
+        registro.put(Key_Id, movie.getId());
+        registro.put(Key_Title, movie.getTitle());
+        registro.put(Key_Description, movie.getDescription());
+        registro.put(Key_Popularity, movie.getPopularity());
+        registro.put(Key_Rating, movie.getRating());
+        registro.put(Key_Reviews, reviews);
+        registro.put(Key_Trailers, trailers);
+        registro.put(Key_Thumbnail, movie.getPoster_thumbnail());
+        registro.put(Key_Poster, movie.getPoster_image_path());
+        registro.put(Key_Preview, movie.getPreview_image_path());
         myDataBase.insert(nTMovies, null, registro);
         close();
     }
@@ -123,10 +138,29 @@ public class DataBase {
      */
     public Cursor getMoviesOrderedBy(@Nullable String sortBy, @Nullable String sortByValue){
         open();
-        String[] columns = new String[]{ Key_Id,Key_Poster,Key_Rating,Key_Popularity,Key_Title };
+        String[] columns = new String[]{ Key_Id,Key_Poster,Key_Rating,Key_Popularity,Key_Title,Key_Description,Key_Trailers,Key_Reviews,Key_Thumbnail};
         Cursor cursor = myDataBase.query(nTMovies,columns,sortBy,new String[]{sortByValue},null,null,sortBy);
         close();
         return cursor;
+    }
+
+    public void removeMovie(long idMovie){
+        open();
+        myDataBase.delete(nTMovies,Key_Id + "= ?", new String[]{String.valueOf(idMovie)});
+        close();
+    }
+
+    public int getInitialStateFavorites(int idMovie){
+        open();
+        String[] columns = new String[]{Key_Id};
+        Cursor cursor = myDataBase.query(nTMovies,columns,Key_Id + " = ?", new String[]{String.valueOf(idMovie)},null,null,null);
+        if (cursor.getCount() > 0){
+            close();
+            return R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+        }else{
+            close();
+            return R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+        }
     }
 
     /**

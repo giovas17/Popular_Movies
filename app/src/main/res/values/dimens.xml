@@ -5,6 +5,8 @@
     <dimen name="normal_padding">10dp</dimen>
     <dimen name="small_padding">7dp</dimen>
     <dimen name="elevation">6dp</dimen>
+    <dimen name="max_elevation">12dp</dimen>
     <dimen name="space">6dp</dimen>
     <dimen name="divider_height">2dp</dimen>
+    <dimen name="fab_compat_margin">6dp</dimen>
 </resources>
