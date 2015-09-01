@@ -23,6 +23,7 @@ import softwaremobility.darkgeat.data.DataBase;
 import softwaremobility.darkgeat.fragments.Detail;
 import softwaremobility.darkgeat.fragments.Principal;
 import softwaremobility.darkgeat.listeners.onFavouriteSelectedListener;
+import softwaremobility.darkgeat.listeners.onMovieSelectedListener;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
 import softwaremobility.darkgeat.network.NetworkConnection;
 import softwaremobility.darkgeat.objects.Movie;
@@ -30,17 +31,15 @@ import softwaremobility.darkgeat.utils.Utils;
 
 import static softwaremobility.darkgeat.utils.JSONParser.getMoviesData;
 
-public class MainActivity extends AppCompatActivity implements onNetworkDataListener {
+public class MainActivity extends AppCompatActivity implements onNetworkDataListener,onMovieSelectedListener {
 
     public static final String FRAGMENT_PRINCIPAL_TAG = Principal.class.getSimpleName();
     public static final String FRAGMENT_DETAIL_TAG = Detail.class.getSimpleName();
-    private Toolbar toolbar;
-    private JSONObject data;
     private String mSortBy;
     private ArrayList<Movie> mMovies;
     private onFavouriteSelectedListener listener;
     private FloatingActionButton favorite;
-    public static Movie movie = null;
+    public Movie movie = null;
     public static boolean two_views = false;
 
     @Override
@@ -48,20 +47,22 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setElevation(5f);
 
-        two_views = findViewById(R.id.detail_container) != null ? true : false;
+        two_views = findViewById(R.id.detail_container) != null;
 
         if(savedInstanceState == null) {
             if(two_views){
                 Detail detail = new Detail();
+                detail.setMovieListener(this);
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("movieSelected", new Movie());
                 detail.setArguments(bundle);
                 listener = detail;
                 favorite = (FloatingActionButton)findViewById(R.id.fab);
+                initFloatingButton();
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -77,8 +78,11 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
             mMovies = savedInstanceState.getParcelableArrayList("key");
             mSortBy = savedInstanceState.getString("sort");
             if (two_views){
+                movie = savedInstanceState.getParcelable("movie");
                 listener = (onFavouriteSelectedListener) getSupportFragmentManager().findFragmentByTag(FRAGMENT_DETAIL_TAG);
+                ((Detail)getSupportFragmentManager().findFragmentByTag(FRAGMENT_DETAIL_TAG)).setMovieListener(this);
                 favorite = (FloatingActionButton)findViewById(R.id.fab);
+                initFloatingButton();
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -106,8 +110,11 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("key",mMovies);
+        outState.putParcelableArrayList("key", mMovies);
         outState.putString("sort",mSortBy);
+        if (two_views){
+            outState.putParcelable("movie",movie);
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -136,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
 
     @Override
     public void onReceivedData(JSONObject object) {
-        data = object;
+        JSONObject data = object;
         mMovies = getMoviesData(data,this);
         Principal main = new Principal();
         Bundle bundle = new Bundle();
@@ -155,4 +162,20 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
         return (new int[]{width,height});
     }
 
+    @Override
+    public void onMovieSelected(Movie movieSelected) {
+        movie = movieSelected;
+        initFloatingButton();
+    }
+
+    public void initFloatingButton(){
+        DataBase myDataBase = new DataBase(this);
+        if (movie != null){
+            int resource = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+            if (myDataBase.isFavorite(movie.getId())){
+                resource = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+            }
+            favorite.setImageResource(resource);
+        }
+    }
 }

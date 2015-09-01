@@ -53,6 +53,7 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
     private TextView currentPage,labelOF,totalPages;
     private ViewPager viewPagerTrailers;
     private onNetworkDataListener listener;
+    private onMovieSelectedListener movieListener;
     private NetworkConnection.Request type;
     private RecyclerView reviews;
     private ArrayList<Review> mReviews;
@@ -235,7 +236,7 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
             type = NetworkConnection.Request.videoRequest;
             NetworkConnection connection = new NetworkConnection(getActivity(), type, listener);
             connection.execute(String.valueOf(movie.getId()));
-            MainActivity.movie = movie;
+            movieListener.onMovieSelected(movieSelected);
         }
 
     }
@@ -306,10 +307,10 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
         if (mTrailers != null && mTrailers.size() > 0){
             outState.putParcelableArrayList("trailers",mTrailers);
         }
-        if(revs.length() > 0 || revs != null){
+        if(revs.length() > 0){
             outState.putString("revs",revs);
         }
-        if(trails.length() > 0 || trails != null){
+        if(trails.length() > 0){
             outState.putString("trails",trails);
         }
         super.onSaveInstanceState(outState);
@@ -319,7 +320,7 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
     public int onSelectedMovieAsFavorite(Movie movie) {
         int resource;
         DataBase dataBase = new DataBase(getActivity());
-        if (movie.isFavorite()){
+        if (dataBase.isFavorite(movie.getId())){
             resource = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
             men.cancel();
             men = Toast.makeText(getActivity(),"You unmarked " + movie.getTitle() + " as Favorite",Toast.LENGTH_LONG);
@@ -358,5 +359,7 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
         }
     }
 
-
+    public void setMovieListener(onMovieSelectedListener movieListener) {
+        this.movieListener = movieListener;
+    }
 }

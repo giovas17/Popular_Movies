@@ -101,16 +101,9 @@ public class DataBase {
 
     /**
      * This method is used to make a new entry for movies table
-     * @param id String that represents the id of the movie.
-     * @param title String that represents the title of the movie.
-     * @param description String that represents the description of the movie.
-     * @param popularity String that represents the popularity value of the movie.
-     * @param rating String that represents the rating value of the movie.
+     * @param movie Movie object that represents a virtual instance of the movie.
      * @param reviews String that represents the JSON string of reviews.
      * @param trailers String that represents the JSON string of trailers.
-     * @param thumbnail String that represents the thumbnail path of the movie.
-     * @param poster String that represents the poster path of the movie.
-     * @param preview String that represents the preview path of the movie.
      */
     public void newEntryMovies(Movie movie, String reviews, String trailers){
         open();
@@ -150,16 +143,16 @@ public class DataBase {
         close();
     }
 
-    public int getInitialStateFavorites(int idMovie){
+    public boolean isFavorite(long idMovie){
         open();
         String[] columns = new String[]{Key_Id};
         Cursor cursor = myDataBase.query(nTMovies,columns,Key_Id + " = ?", new String[]{String.valueOf(idMovie)},null,null,null);
         if (cursor.getCount() > 0){
             close();
-            return R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+            return true;
         }else{
             close();
-            return R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+            return false;
         }
     }
 

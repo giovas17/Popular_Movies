@@ -81,7 +81,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         viewHolder.ratingMovie.setText(mContext.getString(R.string.rating_text,movies.get(position).getRating()));
         if(MainActivity.two_views && position == 0 && isFirstTime){
             listener.onMovieSelected(movies.get(position));
-            MainActivity.movie = movies.get(position);
             isFirstTime = false;
         }
     }
