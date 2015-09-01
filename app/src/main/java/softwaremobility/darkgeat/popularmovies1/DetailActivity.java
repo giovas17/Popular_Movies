@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
+
+import softwaremobility.darkgeat.data.DataBase;
 import softwaremobility.darkgeat.fragments.Detail;
 import softwaremobility.darkgeat.listeners.onFavouriteSelectedListener;
 import softwaremobility.darkgeat.objects.Movie;
@@ -44,6 +46,7 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(this).load(movie.getPreview_image_path()).into(header);
 
         favorites = (FloatingActionButton)findViewById(R.id.fab);
+        initFloatingButton();
 
         if(savedInstanceState == null) {
             Detail detail = new Detail();
@@ -81,5 +84,16 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void initFloatingButton() {
+        DataBase myDataBase = new DataBase(this);
+        if (movie != null) {
+            int resource = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+            if (myDataBase.isFavorite(movie.getId())) {
+                resource = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+            }
+            favorites.setImageResource(resource);
+        }
     }
 }

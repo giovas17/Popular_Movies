@@ -129,6 +129,11 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
                     refreshReviews(object);
                 }
             }
+
+            @Override
+            public void onReceivedData(ArrayList<Movie> movies) {
+
+            }
         };
 
         if(MainActivity.two_views){
@@ -300,17 +305,17 @@ public class Detail extends Fragment implements onMovieSelectedListener,onFavour
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("movie",movie);
+        outState.putParcelable("movie", movie);
         if(mReviews != null && mReviews.size() > 0){
             outState.putParcelableArrayList("reviews",mReviews);
         }
         if (mTrailers != null && mTrailers.size() > 0){
             outState.putParcelableArrayList("trailers",mTrailers);
         }
-        if(revs.length() > 0){
+        if(revs != null && revs.length() > 0){
             outState.putString("revs",revs);
         }
-        if(trails.length() > 0){
+        if(trails != null && trails.length() > 0){
             outState.putString("trails",trails);
         }
         super.onSaveInstanceState(outState);

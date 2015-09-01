@@ -66,7 +66,10 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        favorite.setImageResource(listener.onSelectedMovieAsFavorite(movie));
+                        int resource = listener.onSelectedMovieAsFavorite(movie);
+                        favorite.setImageResource(resource);
+                        if(resource == R.drawable.abc_btn_rating_star_off_mtrl_alpha && mSortBy.equals(getString(R.string.favorites_value)))
+                            refreshData();
                     }
                 });
                 getSupportFragmentManager().beginTransaction().replace(R.id.detail_container,
@@ -86,7 +89,10 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        favorite.setImageResource(listener.onSelectedMovieAsFavorite(movie));
+                        int resource = listener.onSelectedMovieAsFavorite(movie);
+                        favorite.setImageResource(resource);
+                        if(resource == R.drawable.abc_btn_rating_star_off_mtrl_alpha && mSortBy.equals(getString(R.string.favorites_value)))
+                            refreshData();
                     }
                 });
             }
@@ -105,15 +111,17 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
         if(sortBy != null && !sortBy.equals(mSortBy)){
             mSortBy = sortBy;
             refreshData();
+        }else if(sortBy.equals(getString(R.string.favorites_value))){
+            refreshData();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("key", mMovies);
-        outState.putString("sort",mSortBy);
+        outState.putString("sort", mSortBy);
         if (two_views){
-            outState.putParcelable("movie",movie);
+            outState.putParcelable("movie", movie);
         }
         super.onSaveInstanceState(outState);
     }
@@ -145,6 +153,20 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     public void onReceivedData(JSONObject object) {
         JSONObject data = object;
         mMovies = getMoviesData(data,this);
+        refreshingMovies();
+    }
+
+    @Override
+    public void onReceivedData(ArrayList<Movie> movies) {
+        mMovies = movies;
+        if (mMovies.size() > 0) {
+            refreshingMovies();
+        }else{
+
+        }
+    }
+
+    public void refreshingMovies(){
         Principal main = new Principal();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("key", mMovies);

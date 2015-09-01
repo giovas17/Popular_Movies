@@ -1,6 +1,7 @@
 package softwaremobility.darkgeat.network;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -13,8 +14,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
+import softwaremobility.darkgeat.data.DataBase;
 import softwaremobility.darkgeat.listeners.onNetworkDataListener;
+import softwaremobility.darkgeat.objects.Movie;
 import softwaremobility.darkgeat.popularmovies1.R;
 
 /**
@@ -25,9 +29,10 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     private final String NETWORK_TAG = NetworkConnection.class.getSimpleName();
     private final Context mContext;
     private onNetworkDataListener listener;
-    private JSONObject data;
     private String responseJsonStr = null;
     private Request typeRequest;
+    private boolean favorite = false;
+    private ArrayList<Movie> movies = new ArrayList<>();
 
     public NetworkConnection(Context c){
         mContext = c;
@@ -55,6 +60,8 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
                 searchField = params[0];
 
                 String sortBy = (searchField == null) ? mContext.getString(R.string.sort_list_default_value) : searchField;
+
+                favorite = sortBy.equals(mContext.getString(R.string.favorites_value));
 
                 //Construction of the request URL
                 requestURL = Uri.parse(BASE_URL).buildUpon()
@@ -93,7 +100,20 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
             }
         }
         Log.w(NETWORK_TAG,requestURL.toString());
-        return retrieveData(requestURL);
+        if (favorite){
+            return getFavorites();
+        }else {
+            return retrieveData(requestURL);
+        }
+    }
+
+    private boolean getFavorites(){
+        boolean ret = false;
+        DataBase dataBase = new DataBase(mContext);
+        if (ret = !dataBase.isEmpty(DataBase.nTMovies,DataBase.Key_Id)){
+            movies = dataBase.getMoviesOrderedBy(DataBase.Key_Title);
+        }
+        return ret;
     }
 
     private boolean retrieveData(Uri requestedURL){
@@ -139,11 +159,15 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if(result){
-            try {
-                data = new JSONObject(responseJsonStr);
-                listener.onReceivedData(data);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(favorite){
+                listener.onReceivedData(movies);
+            }else {
+                try {
+                    JSONObject data = new JSONObject(responseJsonStr);
+                    listener.onReceivedData(data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
