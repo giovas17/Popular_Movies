@@ -18,6 +18,7 @@ public class Movie implements Parcelable{
     private String poster_image_path;
     private String preview_image_path;
     private String poster_thumbnail;
+    private boolean favorite;
 
     public Movie() {
         title = "";
@@ -31,6 +32,7 @@ public class Movie implements Parcelable{
         poster_image_path = "";
         preview_image_path = "";
         poster_thumbnail = "";
+        favorite = false;
     }
 
     public String getTitle() {
@@ -121,6 +123,14 @@ public class Movie implements Parcelable{
         this.poster_thumbnail = poster_thumbnail;
     }
 
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean isFavorite) {
+        this.favorite = isFavorite;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -141,6 +151,8 @@ public class Movie implements Parcelable{
             aux.setPoster_image_path(source.readString());
             aux.setPreview_image_path(source.readString());
             aux.setPoster_thumbnail(source.readString());
+            boolean favourite = (source.readInt() == 1) ? true : false;
+            aux.setFavorite(favourite);
             return aux;
         }
 
@@ -163,5 +175,7 @@ public class Movie implements Parcelable{
         dest.writeString(poster_image_path);
         dest.writeString(preview_image_path);
         dest.writeString(poster_thumbnail);
+        int myFavorite = favorite ? 1 : 0;
+        dest.writeInt(myFavorite);
     }
 }

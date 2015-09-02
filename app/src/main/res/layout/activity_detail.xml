@@ -46,6 +46,13 @@
     </android.support.design.widget.AppBarLayout>
     <!-- Here goes my content -->
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:src="@drawable/abc_btn_rating_star_off_mtrl_alpha"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        style="@style/FabStyle"/>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -2,12 +2,17 @@ package softwaremobility.darkgeat.popularmovies1;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
+
+import softwaremobility.darkgeat.data.DataBase;
 import softwaremobility.darkgeat.fragments.Detail;
+import softwaremobility.darkgeat.listeners.onFavouriteSelectedListener;
 import softwaremobility.darkgeat.objects.Movie;
 
 /**
@@ -18,7 +23,9 @@ public class DetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView header;
+    private FloatingActionButton favorites;
     private Movie movie;
+    private onFavouriteSelectedListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +45,27 @@ public class DetailActivity extends AppCompatActivity {
         header = (ImageView)findViewById(R.id.header);
         Picasso.with(this).load(movie.getPreview_image_path()).into(header);
 
+        favorites = (FloatingActionButton)findViewById(R.id.fab);
+        initFloatingButton();
+
         if(savedInstanceState == null) {
             Detail detail = new Detail();
             Bundle bundle = new Bundle();
             bundle.putParcelable("movieSelected", movie);
             detail.setArguments(bundle);
+            listener = detail;
 
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, detail, MainActivity.FRAGMENT_DETAIL_TAG).commit();
+        }else{
+            listener = (onFavouriteSelectedListener) getSupportFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_DETAIL_TAG);
         }
+
+        favorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                favorites.setImageResource(listener.onSelectedMovieAsFavorite(movie));
+            }
+        });
 
     }
 
@@ -64,5 +84,16 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void initFloatingButton() {
+        DataBase myDataBase = new DataBase(this);
+        if (movie != null) {
+            int resource = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
+            if (myDataBase.isFavorite(movie.getId())) {
+                resource = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
+            }
+            favorites.setImageResource(resource);
+        }
     }
 }
