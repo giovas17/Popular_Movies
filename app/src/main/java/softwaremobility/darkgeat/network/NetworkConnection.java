@@ -108,12 +108,11 @@ public class NetworkConnection extends AsyncTask<String,Void,Boolean> {
     }
 
     private boolean getFavorites(){
-        boolean ret = false;
         DataBase dataBase = new DataBase(mContext);
-        if (ret = !dataBase.isEmpty(DataBase.nTMovies,DataBase.Key_Id)){
+        if (!dataBase.isEmpty(DataBase.nTMovies,DataBase.Key_Id)){
             movies = dataBase.getMoviesOrderedBy(DataBase.Key_Title);
         }
-        return ret;
+        return true;
     }
 
     private boolean retrieveData(Uri requestedURL){

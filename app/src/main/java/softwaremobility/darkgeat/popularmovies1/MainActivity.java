@@ -12,6 +12,8 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -153,16 +155,27 @@ public class MainActivity extends AppCompatActivity implements onNetworkDataList
     public void onReceivedData(JSONObject object) {
         JSONObject data = object;
         mMovies = getMoviesData(data,this);
+        HideOrShowDetails();
         refreshingMovies();
     }
 
     @Override
     public void onReceivedData(ArrayList<Movie> movies) {
         mMovies = movies;
-        if (mMovies.size() > 0) {
-            refreshingMovies();
-        }else{
+        HideOrShowDetails();
+        refreshingMovies();
+    }
 
+    private void HideOrShowDetails() {
+        if (two_views){
+            FrameLayout detail = (FrameLayout)findViewById(R.id.detail_container);
+            if(mMovies.size() > 0){
+                detail.setVisibility(View.VISIBLE);
+                favorite.setVisibility(View.VISIBLE);
+            }else{
+                detail.setVisibility(View.GONE);
+                favorite.setVisibility(View.GONE);
+            }
         }
     }
 
